@@ -397,9 +397,3 @@ in Edge-VCA:
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE).
-
-## Author
-
-Built by Eishaan Khatri as a portfolio-grade AI systems project spanning
-computer vision, backend engineering, anomaly detection, infrastructure
-monitoring, and real-time dashboards.
