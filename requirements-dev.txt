@@ -1,0 +1,15 @@
+# ═══════════════════════════════════════════════
+# IRMDS — Development & Testing Dependencies
+# ═══════════════════════════════════════════════
+
+-r requirements.txt          # Include all production deps
+
+# Testing
+pytest>=8.0.0               # Test runner
+pytest-cov>=4.1.0           # Coverage reporting
+pytest-asyncio>=0.23.0      # Async test support for FastAPI
+
+# Code Quality
+ruff>=0.3.0                 # Linter + formatter (replaces black + isort + flake8)
+mypy>=1.8.0                 # Static type checker
+pre-commit>=3.6.0           # Git hook manager

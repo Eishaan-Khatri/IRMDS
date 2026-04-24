@@ -1,0 +1,42 @@
+# ═══════════════════════════════════════════════
+# IRMDS — Production Dependencies
+# ═══════════════════════════════════════════════
+
+# Core AI / Computer Vision
+ultralytics>=8.0.0          # YOLOv8 object detection
+opencv-python>=4.8.0        # Video capture, image processing
+numpy>=1.26.0               # Numerical computing foundation
+
+# Machine Learning
+scikit-learn>=1.4.0         # Isolation Forest, preprocessing
+pandas>=2.2.0               # DataFrames for time-series & network features
+joblib>=1.3.0               # Model serialization / persistence
+
+# API Framework
+fastapi>=0.110.0            # Async REST API framework
+uvicorn[standard]>=0.27.0   # ASGI server for FastAPI
+pydantic>=2.6.0             # Data validation & serialization
+pydantic-settings>=2.1.0    # Configuration from .env / environment
+websockets>=12.0            # WebSocket support for real-time streaming
+
+# Database
+sqlalchemy>=2.0.0           # ORM layer (SQLite → PostgreSQL swap)
+aiosqlite>=0.20.0           # Async SQLite driver for SQLAlchemy
+
+# Logging & Observability
+structlog>=24.1.0           # Structured JSON logging
+
+# System Monitoring (Module 4)
+psutil>=5.9.0               # CPU, RAM, disk, network metrics
+
+# Network Analysis (Module 2)
+scapy>=2.5.0                # Packet capture / pcap parsing
+
+# Dashboard
+streamlit>=1.30.0           # Interactive real-time dashboard
+plotly>=5.18.0              # Charts & visualizations
+httpx>=0.27.0               # Async HTTP client (dashboard → API)
+
+# CLI
+typer[all]>=0.9.0           # Modern CLI framework
+rich>=13.7.0                # Rich terminal output (tables, colors)

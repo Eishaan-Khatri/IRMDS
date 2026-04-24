@@ -1,0 +1,8 @@
+[
+    {
+        "name": "Zone A",
+        "points": [[160, 120], [480, 120], [480, 360], [160, 360]],
+        "crowd_threshold": 3,
+        "loiter_seconds": 4
+    }
+]
