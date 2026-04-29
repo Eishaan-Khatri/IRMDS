@@ -31,3 +31,13 @@
 - **Dynamic Thresholding:** Add logic to the `AlertManager` to load per-hour sensitivity profiles. Decrease sensitivity during "Business Hours" (high expected activity) and increase it during "Dark Hours" (zero-tolerance for movement).
 
 **Success Metric:** 40% reduction in "Noise" alerts (non-actionable INFO/WARNING).
+
+### Week 4: The Metrics Registry (Self-Documentation)
+**Objective:** Standardize telemetry schemas to allow auto-generation of dashboards and documentation.
+
+**Engineering Tasks:**
+- **Metric Registration API:** Update `core/metrics_collector.py` to require a `register_schema` call from each module. This defines the unit (e.g., "ms", "percentage", "bytes"), range (0-100), and labels for each metric key.
+- **OpenMetrics Export:** Implement a Prometheus-compatible endpoint at `/metrics/prometheus` that iterates over the `MetricsCollector` registry and exports data in the standard text format.
+- **Auto-Generated Data Dictionary:** Build a CLI command `irmds docs metrics` that parses the registry and generates a markdown table of every system metric, its source, and its meaning for end-users.
+
+**Success Metric:** 100% of internal metrics are accessible via Prometheus/Grafana without manual mapping.
