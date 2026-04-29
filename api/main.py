@@ -108,6 +108,23 @@ def create_app() -> FastAPI:
             allow_headers=["*"],
         )
 
+    # ── Request Logging Middleware ──────────────────────────
+    from fastapi import Request
+
+    @app.middleware("http")
+    async def log_requests(request: Request, call_next):
+        start_time = time.perf_counter()
+        response = await call_next(request)
+        process_time = (time.perf_counter() - start_time) * 1000
+        log.info(
+            "http_request",
+            method=request.method,
+            path=request.url.path,
+            status=response.status_code,
+            duration_ms=round(process_time, 2),
+        )
+        return response
+
     # Register Routers
     app.include_router(system.router, tags=["System"])
     app.include_router(modules.router)
