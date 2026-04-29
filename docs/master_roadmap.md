@@ -41,3 +41,13 @@
 - **Auto-Generated Data Dictionary:** Build a CLI command `irmds docs metrics` that parses the registry and generates a markdown table of every system metric, its source, and its meaning for end-users.
 
 **Success Metric:** 100% of internal metrics are accessible via Prometheus/Grafana without manual mapping.
+
+### Week 5: Secure Config Injection (Zero-Trust Security)
+**Objective:** Eliminate plain-text secrets and implement hardware-backed security.
+
+**Engineering Tasks:**
+- **Secret Store Provider:** Implement a `SecretManager` interface in `core/config.py`. Add support for HashiCorp Vault and Azure Key Vault. When enabled, sensitive fields like `slack_webhook_url` or `database_url` are fetched once at startup and never stored on disk.
+- **Environment Scrubbing:** Implement an "Environment Sanity Check." On startup, IRMDS will scan for sensitive env vars and scrub them from the process environment to prevent exposure in process dumps or logging.
+- **Config Hot-Reload:** Implement an `inotify` (Linux) / `Watchdog` (Windows) observer for the `.env` file. Allow the system to reload non-critical thresholds (e.g., `visual_confidence`) without restarting the entire API/lifespan.
+
+**Success Metric:** Zero sensitive credentials stored in plain-text on the host file system.
