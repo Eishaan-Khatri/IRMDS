@@ -33,7 +33,7 @@ from __future__ import annotations
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -42,12 +42,12 @@ if TYPE_CHECKING:
     from core.config import IRMDSConfig
 
 
-class SpeedClassification(str, Enum):
+class SpeedClassification(StrEnum):
     """Human motion classification based on speed thresholds."""
 
     STATIONARY = "STATIONARY"  # < 0.5 m/s — standing still or minor sway
-    WALKING = "WALKING"        # 0.5 – 2.2 m/s — normal walking pace
-    RUNNING = "RUNNING"        # > 2.2 m/s — fast movement, potential anomaly
+    WALKING = "WALKING"  # 0.5 – 2.2 m/s — normal walking pace
+    RUNNING = "RUNNING"  # > 2.2 m/s — fast movement, potential anomaly
 
 
 @dataclass(frozen=True, slots=True)

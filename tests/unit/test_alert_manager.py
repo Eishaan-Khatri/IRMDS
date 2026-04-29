@@ -11,7 +11,6 @@ Tests cover:
 
 from __future__ import annotations
 
-import time
 from unittest.mock import MagicMock
 
 from core.alert_manager import AlertManager
@@ -22,7 +21,7 @@ from core.event_bus import Event, EventBus, Severity
 def _make_config(**overrides) -> IRMDSConfig:
     """Create a config with test-friendly defaults."""
     defaults = {
-        "alert_cooldown_seconds": 1,     # Short cooldown for fast tests
+        "alert_cooldown_seconds": 1,  # Short cooldown for fast tests
         "alert_max_history": 100,
         "alert_escalation_window": 5,
         "alert_escalation_count": 3,
@@ -40,12 +39,14 @@ class TestAlertProcessing:
         manager = AlertManager(bus, _make_config())
         manager.start()
 
-        bus.publish(Event(
-            module="visual",
-            type="LOITERING",
-            severity=Severity.WARNING,
-            data={"zone": "A"},
-        ))
+        bus.publish(
+            Event(
+                module="visual",
+                type="LOITERING",
+                severity=Severity.WARNING,
+                data={"zone": "A"},
+            )
+        )
 
         alerts = manager.get_alerts()
         assert len(alerts) == 1
@@ -59,12 +60,14 @@ class TestAlertProcessing:
         manager = AlertManager(bus, _make_config())
         manager.start()
 
-        bus.publish(Event(
-            module="network",
-            type="NET_ANOMALY",
-            severity=Severity.CRITICAL,
-            data={"pps": 15000},
-        ))
+        bus.publish(
+            Event(
+                module="network",
+                type="NET_ANOMALY",
+                severity=Severity.CRITICAL,
+                data={"pps": 15000},
+            )
+        )
 
         alerts = manager.get_alerts()
         assert len(alerts) == 1

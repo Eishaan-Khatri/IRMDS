@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 class PacketConfig(BaseModel):
     """Immutable representation of a single network packet."""
+
     timestamp: float
     src_ip: str
     dst_ip: str
@@ -23,6 +24,7 @@ class PacketConfig(BaseModel):
 
 class FeatureWindow(BaseModel):
     """Extracted network baseline features over a discrete time window."""
+
     start_time: float
     end_time: float
     packets_per_second: float = Field(..., ge=0)
@@ -39,6 +41,7 @@ class FeatureWindow(BaseModel):
 
 class NetworkAnomalyResult(BaseModel):
     """The final ML decision for a given feature window."""
+
     is_anomaly: bool
     anomaly_type: str | None = None
     isolation_forest_score: float

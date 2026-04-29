@@ -11,7 +11,6 @@ The ORM models represent:
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 from sqlalchemy import JSON, Float, String, create_engine
@@ -80,12 +79,12 @@ def get_engine():
         config = get_config()
         # Ensure SQLite works in a multi-threaded FastAPI / Background thread environment
         connect_args = {"check_same_thread": False} if "sqlite" in config.database_url else {}
-        
+
         _engine = create_engine(
             config.database_url,
             connect_args=connect_args,
             # Uncomment for SQL query logging during debug:
-            # echo=True, 
+            # echo=True,
         )
     return _engine
 

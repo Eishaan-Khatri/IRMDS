@@ -12,7 +12,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import alerts, export, metrics, modules, sessions, system, ws
-
 from core.alert_manager import AlertManager
 from core.config import get_config
 from core.database import init_db
@@ -27,14 +26,14 @@ log = get_logger("api")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage the lifecycle of the IRMDS application.
-    
+
     Startup:
         - Initialize the database.
         - Instantiate the core event/metrics bus.
         - Start the AlertManager to process event streams.
         - Register auto-discovered plugins/modules.
         - Attach these singletons to `app.state` for route dependencies.
-        
+
     Shutdown:
         - Stop the AlertManager.
         - Stop all currently running modules to release local hardware (e.g. webcams).
@@ -67,15 +66,15 @@ async def lifespan(app: FastAPI):
     app.state.startup_time = startup_time
 
     log.info("irmds_api_ready", bind=f"{config.api_host}:{config.api_port}")
-    
+
     yield  # ─── RUNNING BLOCK ───
 
     log.info("irmds_api_shutting_down")
-    
+
     # 6. Clean Shutdown
     alert_manager.stop()
     registry.stop_all()
-    
+
     log.info("irmds_api_shutdown_complete")
 
 

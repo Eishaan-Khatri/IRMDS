@@ -23,15 +23,17 @@ Usage:
 
 from __future__ import annotations
 
-import time
 import threading
+import time
 from collections import defaultdict, deque
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from core.event_bus import Event, Severity
 from core.logger import get_logger
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from core.config import IRMDSConfig
     from core.event_bus import EventBus
 
@@ -59,9 +61,7 @@ class AlertManager:
         self._warning_window: deque[float] = deque()
 
         # Alert storage (in-memory + optional DB callback)
-        self._alerts: deque[dict[str, Any]] = deque(
-            maxlen=config.alert_max_history
-        )
+        self._alerts: deque[dict[str, Any]] = deque(maxlen=config.alert_max_history)
         self._alert_count = 0
         self._lock = threading.Lock()
 
@@ -209,7 +209,10 @@ class AlertManager:
             "severity": severity.value,
             "data": event.data,
             "escalated": severity != event.severity,
+            "session_id": None,
         }
+
+        alert["session_id"] = self._persist_alert(alert)
 
         with self._lock:
             self._alerts.append(alert)
@@ -234,3 +237,37 @@ class AlertManager:
                 self._notify_callback(alert)
             except Exception:
                 log.error("notification_callback_failed", exc_info=True)
+
+    @staticmethod
+    def _persist_alert(alert: dict[str, Any]) -> str | None:
+        """Persist an alert to SQLite when the database layer is available.
+
+        Unit tests can use AlertManager without initializing the database, so
+        persistence failures are logged and kept non-fatal. The in-memory
+        alert store remains the fast path for immediate notification flow.
+        """
+        try:
+            from core.database import AlertRecord, SessionRecord, get_session_factory
+
+            session_factory = get_session_factory()
+            with session_factory() as session:
+                active_session = (
+                    session.query(SessionRecord).filter(SessionRecord.status == "active").first()
+                )
+                session_id = active_session.id if active_session else None
+                record = AlertRecord(
+                    id=alert["id"],
+                    timestamp=alert["timestamp"],
+                    module=alert["module"],
+                    type=alert["type"],
+                    severity=alert["severity"],
+                    data=alert["data"],
+                    escalated=alert["escalated"],
+                    session_id=session_id,
+                )
+                session.merge(record)
+                session.commit()
+                return session_id
+        except Exception as exc:
+            log.debug("alert_persistence_skipped", error=str(exc))
+            return None

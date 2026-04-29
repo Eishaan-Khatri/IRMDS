@@ -86,9 +86,7 @@ class MetricsCollector:
         """
         with self._lock:
             if module_id not in self._modules:
-                self._modules[module_id] = ModuleMetrics(
-                    history=deque(maxlen=self._history_size)
-                )
+                self._modules[module_id] = ModuleMetrics(history=deque(maxlen=self._history_size))
             state = self._modules[module_id]
             state.latest = metrics.copy()
             state.history.append(metrics.copy())

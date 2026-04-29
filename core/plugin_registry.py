@@ -72,7 +72,7 @@ class PluginRegistry:
         discovered = []
 
         # Iterate over all sub-packages in modules/
-        for importer, modname, is_pkg in pkgutil.iter_modules(
+        for _importer, modname, is_pkg in pkgutil.iter_modules(
             modules.__path__, modules.__name__ + "."
         ):
             if not is_pkg:
@@ -87,7 +87,7 @@ class PluginRegistry:
                 continue
 
             # Find all BaseModule subclasses in pipeline.py
-            for name, cls in inspect.getmembers(pipeline_mod, inspect.isclass):
+            for _name, cls in inspect.getmembers(pipeline_mod, inspect.isclass):
                 if (
                     issubclass(cls, BaseModule)
                     and cls is not BaseModule
@@ -169,10 +169,7 @@ class PluginRegistry:
 
     def get_running_modules(self) -> list[str]:
         """Get IDs of all currently running modules."""
-        return [
-            mid for mid, mod in self._modules.items()
-            if mod.status == ModuleStatus.RUNNING
-        ]
+        return [mid for mid, mod in self._modules.items() if mod.status == ModuleStatus.RUNNING]
 
     @property
     def module_count(self) -> int:

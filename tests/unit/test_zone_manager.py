@@ -11,7 +11,6 @@ Tests cover:
 
 from __future__ import annotations
 
-import time
 from unittest.mock import patch
 
 from modules.visual.zone_manager import Zone, ZoneManager
@@ -79,7 +78,7 @@ class TestZoneEntryExit:
         zone = _square_zone()
 
         zone.update({0: (50, 50)})  # Enter
-        events = zone.update({})     # Object disappeared (left frame)
+        events = zone.update({})  # Object disappeared (left frame)
 
         exit_events = [e for e in events if e.type == "ZONE_EXIT"]
         assert len(exit_events) == 1

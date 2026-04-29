@@ -20,10 +20,12 @@ class TestTrackRegistration:
     def test_two_detections_get_two_ids(self):
         """Each detection in the first frame gets a unique ID."""
         tracker = CentroidTracker()
-        objects, boxes = tracker.update([
-            (100, 100, 200, 200),
-            (300, 300, 400, 400),
-        ])
+        objects, boxes = tracker.update(
+            [
+                (100, 100, 200, 200),
+                (300, 300, 400, 400),
+            ]
+        )
         assert len(objects) == 2
         assert len(boxes) == 2
         # IDs should be 0 and 1
@@ -97,7 +99,7 @@ class TestIoUComputation:
     def test_contained_box_iou(self):
         """A box fully inside another should have IoU = small_area / large_area."""
         iou = CentroidTracker._compute_iou(
-            (0, 0, 200, 200),    # 40000 px²
+            (0, 0, 200, 200),  # 40000 px²
             (50, 50, 100, 100),  # 2500 px²
         )
         # Intersection = 2500, Union = 40000 + 2500 - 2500 = 40000

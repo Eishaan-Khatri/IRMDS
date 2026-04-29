@@ -21,21 +21,22 @@ Usage:
 
 from __future__ import annotations
 
-import enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 import cv2
-import numpy as np
 
 from core.logger import get_logger
 
 if TYPE_CHECKING:
+    import numpy as np
+
     from core.config import IRMDSConfig
 
 log = get_logger("frame_source")
 
 
-class SourceType(str, enum.Enum):
+class SourceType(StrEnum):
     """Classification of the input source for logging purposes."""
 
     WEBCAM = "webcam"

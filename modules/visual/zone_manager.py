@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -128,12 +128,14 @@ class Zone:
         for oid in entered:
             self.enter_count += 1
             self.dwell_start[oid] = now
-            events.append(ZoneEvent(
-                type="ZONE_ENTRY",
-                zone_name=self.name,
-                object_id=oid,
-                occupancy=len(currently_inside),
-            ))
+            events.append(
+                ZoneEvent(
+                    type="ZONE_ENTRY",
+                    zone_name=self.name,
+                    object_id=oid,
+                    occupancy=len(currently_inside),
+                )
+            )
 
         # ── Exit events ──────────────────────────────────
         exited = self.inside_ids - currently_inside
@@ -141,13 +143,15 @@ class Zone:
             self.exit_count += 1
             dwell = now - self.dwell_start.pop(oid, now)
             self._loiter_alerted.discard(oid)
-            events.append(ZoneEvent(
-                type="ZONE_EXIT",
-                zone_name=self.name,
-                object_id=oid,
-                dwell_seconds=round(dwell, 1),
-                occupancy=len(currently_inside),
-            ))
+            events.append(
+                ZoneEvent(
+                    type="ZONE_EXIT",
+                    zone_name=self.name,
+                    object_id=oid,
+                    dwell_seconds=round(dwell, 1),
+                    occupancy=len(currently_inside),
+                )
+            )
 
         # ── Loitering detection ──────────────────────────
         for oid in currently_inside:
@@ -156,23 +160,27 @@ class Zone:
             dwell = now - self.dwell_start.get(oid, now)
             if dwell >= self.loiter_seconds:
                 self._loiter_alerted.add(oid)
-                events.append(ZoneEvent(
-                    type="LOITERING",
-                    zone_name=self.name,
-                    object_id=oid,
-                    dwell_seconds=round(dwell, 1),
-                    occupancy=len(currently_inside),
-                ))
+                events.append(
+                    ZoneEvent(
+                        type="LOITERING",
+                        zone_name=self.name,
+                        object_id=oid,
+                        dwell_seconds=round(dwell, 1),
+                        occupancy=len(currently_inside),
+                    )
+                )
 
         # ── Crowd alert ──────────────────────────────────
         is_crowded = len(currently_inside) >= self.crowd_threshold
         if is_crowded and not self._crowd_alerted:
             self._crowd_alerted = True
-            events.append(ZoneEvent(
-                type="CROWD_ALERT",
-                zone_name=self.name,
-                occupancy=len(currently_inside),
-            ))
+            events.append(
+                ZoneEvent(
+                    type="CROWD_ALERT",
+                    zone_name=self.name,
+                    occupancy=len(currently_inside),
+                )
+            )
         elif not is_crowded:
             self._crowd_alerted = False  # Reset when crowd disperses
 
@@ -246,9 +254,7 @@ class ZoneManager:
         ]
         return cls([Zone("Zone A", points)])
 
-    def update(
-        self, tracked_objects: dict[int, tuple[int, int]]
-    ) -> list[ZoneEvent]:
+    def update(self, tracked_objects: dict[int, tuple[int, int]]) -> list[ZoneEvent]:
         """Process all zones and return combined events."""
         all_events: list[ZoneEvent] = []
         for zone in self.zones:

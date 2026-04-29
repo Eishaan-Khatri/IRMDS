@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import threading
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 from core.logger import get_logger
@@ -37,14 +37,14 @@ if TYPE_CHECKING:
     from core.metrics_collector import MetricsCollector
 
 
-class ModuleStatus(str, Enum):
+class ModuleStatus(StrEnum):
     """Current operational state of a module."""
 
-    STOPPED = "stopped"      # Not running, no resources allocated
-    STARTING = "starting"    # Initializing resources (model loading, etc.)
-    RUNNING = "running"      # Actively processing data
-    STOPPING = "stopping"    # Graceful shutdown in progress
-    ERROR = "error"          # Failed — check logs for details
+    STOPPED = "stopped"  # Not running, no resources allocated
+    STARTING = "starting"  # Initializing resources (model loading, etc.)
+    RUNNING = "running"  # Actively processing data
+    STOPPING = "stopping"  # Graceful shutdown in progress
+    ERROR = "error"  # Failed — check logs for details
 
 
 class BaseModule(ABC):
@@ -102,6 +102,7 @@ class BaseModule(ABC):
         """
         if self.status == ModuleStatus.RUNNING:
             from core.exceptions import ModuleAlreadyRunningError
+
             raise ModuleAlreadyRunningError(self.module_id)
 
         self.log.info("module_starting")

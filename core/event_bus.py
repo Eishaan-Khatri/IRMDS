@@ -33,16 +33,19 @@ import threading
 import uuid
 from collections import deque
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Callable
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import TYPE_CHECKING, Any
 
 from core.logger import get_logger
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 log = get_logger("event_bus")
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     """Alert severity levels, ordered by escalation priority."""
 
     INFO = "INFO"
@@ -71,9 +74,7 @@ class Event:
     severity: Severity
     data: dict[str, Any] = field(default_factory=dict)
     id: str = field(default_factory=lambda: f"evt_{uuid.uuid4().hex[:12]}")
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a plain dict for JSON transmission."""

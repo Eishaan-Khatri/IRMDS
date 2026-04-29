@@ -33,7 +33,6 @@ from core.metrics_collector import MetricsCollector
 from modules.visual.detector import Detection
 from modules.visual.pipeline import VisualPipeline
 
-
 # ─────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────
@@ -106,6 +105,7 @@ def _make_zone_detector():
     This detector places a person at centroid (320, 240) — dead center.
     It moves slowly (2px per frame) so it stays inside the zone.
     """
+
     class InZoneDetector:
         def __init__(self):
             self._call_count = 0
@@ -115,10 +115,16 @@ def _make_zone_detector():
             self._call_count += 1
             # Small movement within zone center: x from 295..325
             x = 295 + self._call_count * 2
-            return [Detection(
-                x1=x, y1=155, x2=x + 50, y2=325,
-                confidence=0.9, class_id=0,
-            )]
+            return [
+                Detection(
+                    x1=x,
+                    y1=155,
+                    x2=x + 50,
+                    y2=325,
+                    confidence=0.9,
+                    class_id=0,
+                )
+            ]
 
     return InZoneDetector()
 
@@ -177,8 +183,7 @@ class TestVisualPipelineIntegration:
         # Verify: zone entry events should have been emitted
         zone_events = [e for e in received_events if e.type == "ZONE_ENTRY"]
         assert len(zone_events) > 0, (
-            f"Expected ZONE_ENTRY events. Got event types: "
-            f"{[e.type for e in received_events]}"
+            f"Expected ZONE_ENTRY events. Got event types: {[e.type for e in received_events]}"
         )
         assert zone_events[0].module == "visual"
 
@@ -308,28 +313,35 @@ class TestVisualPipelineIntegration:
                 fake_clock["t"] = 1000.0 + self._call_count * 0.2
                 # Linear walk: x from 200 → 420 (inside zone)
                 x = min(200 + self._call_count * 20, 420)
-                return [Detection(
-                    x1=x, y1=155, x2=x + 50, y2=325,
-                    confidence=0.9, class_id=0,
-                )]
+                return [
+                    Detection(
+                        x1=x,
+                        y1=155,
+                        x2=x + 50,
+                        y2=325,
+                        confidence=0.9,
+                        class_id=0,
+                    )
+                ]
 
         mock_source = MockFrameSource(max_frames=12)
 
         p1, p2, p3 = _standard_patches(mock_source, FastDetector())
-        with p1, p2, p3:
-            with (
-                patch("modules.visual.pipeline.time.time", side_effect=fake_time),
-                patch("modules.visual.zone_manager.time.time", side_effect=fake_time),
-                patch("modules.visual.speed_estimator.time.time", side_effect=fake_time),
-            ):
-                pipeline._running.set()
-                pipeline._run()
+        with (
+            p1,
+            p2,
+            p3,
+            patch("modules.visual.pipeline.time.time", side_effect=fake_time),
+            patch("modules.visual.zone_manager.time.time", side_effect=fake_time),
+            patch("modules.visual.speed_estimator.time.time", side_effect=fake_time),
+        ):
+            pipeline._running.set()
+            pipeline._run()
 
         # With 0.3 m/s threshold and ~1.5 m/s movement, expect SPEED_ANOMALY
         speed_events = [e for e in received_events if e.type == "SPEED_ANOMALY"]
         assert len(speed_events) >= 1, (
-            f"Expected SPEED_ANOMALY events. Got types: "
-            f"{set(e.type for e in received_events)}"
+            f"Expected SPEED_ANOMALY events. Got types: {set(e.type for e in received_events)}"
         )
         assert speed_events[0].severity == Severity.CRITICAL
 

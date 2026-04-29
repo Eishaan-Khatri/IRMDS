@@ -20,14 +20,14 @@ def get_system_info():
     return {
         "name": "IRMDS API",
         "status": "online",
-        "description": "Intelligent Real-Time Monitoring & Decision System"
+        "description": "Intelligent Real-Time Monitoring & Decision System",
     }
 
 
 @router.get("/health", response_model=HealthResponse, tags=["System"])
 def get_health(request: Request, registry: PluginRegistry = Depends(get_registry)):
     """Check the health of the entire system and all registered modules.
-    
+
     A system is 'degraded' if any active module reports an unhealthy status.
     """
     uptime = time.time() - request.app.state.startup_time
@@ -42,13 +42,13 @@ def get_health(request: Request, registry: PluginRegistry = Depends(get_registry
             h = mod.health_check()
             if mod.status.value == "running" and not h.get("healthy", False):
                 all_healthy = False
-            
+
             module_healths.append(
                 ModuleHealth(
                     module_id=mod_id,
                     healthy=h.get("healthy", False),
                     status=h.get("status", "unknown"),
-                    details=h.get("details", {})
+                    details=h.get("details", {}),
                 )
             )
 
@@ -56,7 +56,7 @@ def get_health(request: Request, registry: PluginRegistry = Depends(get_registry
         status="healthy" if all_healthy else "degraded",
         version="1.0.0",
         uptime_seconds=uptime,
-        modules=module_healths
+        modules=module_healths,
     )
 
 

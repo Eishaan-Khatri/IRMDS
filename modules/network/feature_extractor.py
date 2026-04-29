@@ -8,8 +8,6 @@ Calculates Shannon entropy to detect port scanning, and BPS to detect exfiltrati
 import collections
 import math
 import queue
-import time
-from typing import Optional
 
 from structlog import get_logger
 
@@ -36,11 +34,11 @@ class FeatureExtractor:
 
     def __init__(self, window_seconds: float = 1.0):
         self.window_seconds = window_seconds
-        
+
         # We process packets but immediately discard them structurally after aggregating.
         # This keeps O(1) memory guarantees globally.
         self._current_window_start = 0.0
-        
+
         # Rolling stateless accumulators
         self._pps = 0
         self._bps = 0
@@ -48,9 +46,9 @@ class FeatureExtractor:
         self._udp_count = 0
         self._icmp_count = 0
         self._max_size = 0
-        self._src_ips = set()
-        self._dst_ports = set()
-        self._dst_ips_counter = collections.Counter()
+        self._src_ips: set[str] = set()
+        self._dst_ports: set[int] = set()
+        self._dst_ips_counter: collections.Counter[str] = collections.Counter()
 
     def _reset_accumulators(self, start_time: float):
         """Flushes the accumulators for a new window."""
@@ -66,25 +64,23 @@ class FeatureExtractor:
         self._dst_ips_counter.clear()
 
     def process_queue(
-        self, 
-        packet_queue: queue.Queue, 
-        running_flag: list[bool]
+        self, packet_queue: queue.Queue, running_flag: list[bool]
     ) -> list[FeatureWindow]:
         """
         Pulls packets from the queue. Groups them by `window_seconds`.
         Returns generated FeatureWindows if a window boundary is crossed.
-        
+
         Note: `running_flag` is passed as a mutable list/obj so the thread
         can be externally signaled to stop without blocking forever on get().
         """
         windows_generated = []
-        
+
         while running_flag[0]:
             try:
                 # Block for a very short time to remain responsive to shutdown
                 packet: PacketConfig = packet_queue.get(timeout=0.2)
             except queue.Empty:
-                break # We yield back to the main loop to process whatever generated windows exist
+                break  # We yield back to the main loop to process whatever generated windows exist
 
             # Initialize first window
             if self._current_window_start == 0.0:
@@ -94,9 +90,9 @@ class FeatureExtractor:
             if packet.timestamp >= self._current_window_start + self.window_seconds:
                 # Seal current window
                 end_time = self._current_window_start + self.window_seconds
-                
+
                 # Mathematical derivatives
-                total = self._pps if self._pps > 0 else 1 # avoid ZeroDivision
+                total = self._pps if self._pps > 0 else 1  # avoid ZeroDivision
                 tcp_r = self._tcp_count / total
                 udp_r = self._udp_count / total
                 icmp_r = self._icmp_count / total
@@ -116,7 +112,7 @@ class FeatureExtractor:
                     icmp_ratio=icmp_r,
                     dst_ip_entropy=entropy,
                     avg_packet_size=avg_size,
-                    max_packet_size=self._max_size
+                    max_packet_size=self._max_size,
                 )
                 windows_generated.append(window)
 
@@ -128,22 +124,25 @@ class FeatureExtractor:
             # Accumulate current packet into state
             self._pps += 1
             self._bps += packet.size_bytes
-            
-            if packet.protocol == "TCP": self._tcp_count += 1
-            elif packet.protocol == "UDP": self._udp_count += 1
-            elif packet.protocol == "ICMP": self._icmp_count += 1
-            
+
+            if packet.protocol == "TCP":
+                self._tcp_count += 1
+            elif packet.protocol == "UDP":
+                self._udp_count += 1
+            elif packet.protocol == "ICMP":
+                self._icmp_count += 1
+
             if packet.size_bytes > self._max_size:
                 self._max_size = packet.size_bytes
-                
+
             self._src_ips.add(packet.src_ip)
             self._dst_ports.add(packet.dst_port)
             self._dst_ips_counter[packet.dst_ip] += 1
-            
-            # Fast pump: do not pause to append continuously, only break outward 
+
+            # Fast pump: do not pause to append continuously, only break outward
             # if we accumulate some windows. This way we drain the queue efficiently.
             packet_queue.task_done()
-            
+
             if len(windows_generated) >= 5:
                 # If we're behind and accumulated multi-windows, yield them before hoarding more memory
                 break

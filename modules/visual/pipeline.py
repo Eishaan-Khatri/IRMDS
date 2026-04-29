@@ -35,7 +35,7 @@ from core.event_bus import Event, Severity
 from modules.visual.detector import Detector
 from modules.visual.frame_source import FrameSource
 from modules.visual.heatmap import Heatmap
-from modules.visual.speed_estimator import SpeedClassification, SpeedEstimator
+from modules.visual.speed_estimator import SpeedEstimator
 from modules.visual.tracker import CentroidTracker
 from modules.visual.zone_manager import ZoneManager
 
@@ -72,12 +72,14 @@ class VisualPipeline(BaseModule):
         if not source.open():
             self.log.error("frame_source_unavailable", source=self.config.visual_source)
             # Emit an error event so the dashboard shows it
-            self.event_bus.publish(Event(
-                module=self.module_id,
-                type="SOURCE_ERROR",
-                severity=Severity.CRITICAL,
-                data={"source": self.config.visual_source, "error": "Cannot open video source"},
-            ))
+            self.event_bus.publish(
+                Event(
+                    module=self.module_id,
+                    type="SOURCE_ERROR",
+                    severity=Severity.CRITICAL,
+                    data={"source": self.config.visual_source, "error": "Cannot open video source"},
+                )
+            )
             return
 
         detector = Detector(self.config)
@@ -124,7 +126,7 @@ class VisualPipeline(BaseModule):
 
                 # 1. Read frame
                 success, frame = source.read()
-                if not success:
+                if not success or frame is None:
                     self.log.info("source_exhausted_or_disconnected")
                     break
 
@@ -139,22 +141,22 @@ class VisualPipeline(BaseModule):
                 zone_events = zone_manager.update(tracked_objects)
                 for ze in zone_events:
                     severity = Severity.INFO
-                    if ze.type == "LOITERING":
-                        severity = Severity.WARNING
-                    elif ze.type == "CROWD_ALERT":
+                    if ze.type == "LOITERING" or ze.type == "CROWD_ALERT":
                         severity = Severity.WARNING
 
-                    self.event_bus.publish(Event(
-                        module=self.module_id,
-                        type=ze.type,
-                        severity=severity,
-                        data={
-                            "zone": ze.zone_name,
-                            "object_id": ze.object_id,
-                            "dwell_seconds": ze.dwell_seconds,
-                            "occupancy": ze.occupancy,
-                        },
-                    ))
+                    self.event_bus.publish(
+                        Event(
+                            module=self.module_id,
+                            type=ze.type,
+                            severity=severity,
+                            data={
+                                "zone": ze.zone_name,
+                                "object_id": ze.object_id,
+                                "dwell_seconds": ze.dwell_seconds,
+                                "occupancy": ze.occupancy,
+                            },
+                        )
+                    )
 
                 # 5. Estimate speeds → emit speed anomalies
                 active_speeds: list[float] = []
@@ -172,16 +174,18 @@ class VisualPipeline(BaseModule):
                     # Emit CRITICAL event for running/abnormal speed (once per track)
                     if result.is_anomaly and oid not in speed_alerted:
                         speed_alerted.add(oid)
-                        self.event_bus.publish(Event(
-                            module=self.module_id,
-                            type="SPEED_ANOMALY",
-                            severity=Severity.CRITICAL,
-                            data={
-                                "object_id": oid,
-                                "speed_ms": result.speed_ms,
-                                "classification": result.classification.value,
-                            },
-                        ))
+                        self.event_bus.publish(
+                            Event(
+                                module=self.module_id,
+                                type="SPEED_ANOMALY",
+                                severity=Severity.CRITICAL,
+                                data={
+                                    "object_id": oid,
+                                    "speed_ms": result.speed_ms,
+                                    "classification": result.classification.value,
+                                },
+                            )
+                        )
 
                 # Clean up speed estimator for deregistered tracks
                 active_ids = set(tracked_objects.keys())
@@ -203,16 +207,19 @@ class VisualPipeline(BaseModule):
                 avg_speed = float(np.mean(active_speeds)) if active_speeds else 0.0
                 max_speed = float(np.max(active_speeds)) if active_speeds else 0.0
 
-                self.metrics.push(self.module_id, {
-                    "fps": round(current_fps, 1),
-                    "latency_ms": round(detector.last_latency_ms, 1),
-                    "active_tracks": len(tracked_objects),
-                    "avg_speed_ms": round(avg_speed, 2),
-                    "max_speed_ms": round(max_speed, 2),
-                    "detections": len(detections),
-                    "heatmap_frames": heatmap.frame_count,
-                    "zone_stats": zone_manager.get_stats(),
-                })
+                self.metrics.push(
+                    self.module_id,
+                    {
+                        "fps": round(current_fps, 1),
+                        "latency_ms": round(detector.last_latency_ms, 1),
+                        "active_tracks": len(tracked_objects),
+                        "avg_speed_ms": round(avg_speed, 2),
+                        "max_speed_ms": round(max_speed, 2),
+                        "detections": len(detections),
+                        "heatmap_frames": heatmap.frame_count,
+                        "zone_stats": zone_manager.get_stats(),
+                    },
+                )
 
         finally:
             # Always release resources, even if the loop crashes

@@ -23,7 +23,7 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 from core.logger import get_logger
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 log = get_logger("session")
 
 
-class SessionStatus(str, Enum):
+class SessionStatus(StrEnum):
     """Current state of a monitoring session."""
 
     ACTIVE = "active"

@@ -88,14 +88,11 @@ class CentroidTracker:
             return dict(self.objects), dict(self.boxes)
 
         # Compute centroids for the new detections
-        new_centroids = [
-            ((x1 + x2) // 2, (y1 + y2) // 2)
-            for x1, y1, x2, y2 in detections
-        ]
+        new_centroids = [((x1 + x2) // 2, (y1 + y2) // 2) for x1, y1, x2, y2 in detections]
 
         # First frame or no existing tracks → register all detections
         if not self.objects:
-            for centroid, bbox in zip(new_centroids, detections):
+            for centroid, bbox in zip(new_centroids, detections, strict=False):
                 self._register(centroid, bbox)
             return dict(self.objects), dict(self.boxes)
 
@@ -152,8 +149,7 @@ class CentroidTracker:
 
     def _deregister(self, oid: int) -> None:
         """Remove a track and all its associated state."""
-        for store in (self.objects, self.boxes, self.metadata,
-                      self.track_ages, self._disappeared):
+        for store in (self.objects, self.boxes, self.metadata, self.track_ages, self._disappeared):
             store.pop(oid, None)
 
     def _handle_no_detections(self) -> None:

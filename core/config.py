@@ -36,75 +36,75 @@ class IRMDSConfig(BaseSettings):
 
     # ── Visual Module ─────────────────────────────────────
     visual_model_path: str = "models/yolov8n.pt"
-    visual_confidence: float = 0.4      # YOLO detection confidence threshold
-    visual_iou_threshold: float = 0.3   # IoU threshold for tracker association
-    visual_max_disappeared: int = 20    # Frames before a lost track is pruned
-    visual_loiter_seconds: int = 4      # Seconds in zone before loitering alert
-    visual_crowd_threshold: int = 3     # People in zone to trigger crowd alert
+    visual_confidence: float = 0.4  # YOLO detection confidence threshold
+    visual_iou_threshold: float = 0.3  # IoU threshold for tracker association
+    visual_max_disappeared: int = 20  # Frames before a lost track is pruned
+    visual_loiter_seconds: int = 4  # Seconds in zone before loitering alert
+    visual_crowd_threshold: int = 3  # People in zone to trigger crowd alert
     visual_speed_alert_ms: float = 2.2  # Speed (m/s) above which = "running"
     visual_human_height_m: float = 1.7  # Anthropometric constant for calibration
-    visual_source: str = "0"            # Webcam index, file path, or RTSP URL
-    visual_frame_width: int = 640       # Processing resolution width
-    visual_frame_height: int = 480      # Processing resolution height
-    visual_frame_skip: int = 1          # Process every Nth frame (1 = all)
+    visual_source: str = "0"  # Webcam index, file path, or RTSP URL
+    visual_frame_width: int = 640  # Processing resolution width
+    visual_frame_height: int = 480  # Processing resolution height
+    visual_frame_skip: int = 1  # Process every Nth frame (1 = all)
 
     # ── Network Module ────────────────────────────────────
-    network_window_seconds: float = 1.0     # Aggregation window for features
-    network_baseline_windows: int = 60      # Windows to collect before training
+    network_window_seconds: float = 1.0  # Aggregation window for features
+    network_baseline_windows: int = 60  # Windows to collect before training
     network_anomaly_contamination: float = 0.05  # Isolation Forest contamination
-    network_zscore_threshold: float = 3.0   # Z-score threshold for flagging
-    network_ddos_pps: int = 10000           # Packets/sec to suspect DDoS
-    network_scan_ports: int = 100           # Unique ports to suspect port scan
+    network_zscore_threshold: float = 3.0  # Z-score threshold for flagging
+    network_ddos_pps: int = 10000  # Packets/sec to suspect DDoS
+    network_scan_ports: int = 100  # Unique ports to suspect port scan
 
     # ── Finance Module ────────────────────────────────────
     finance_data_path: str = "data/sample_stock.csv"
-    finance_volatility_window: int = 20     # Rolling volatility lookback
-    finance_rsi_period: int = 14            # RSI calculation period
-    finance_bollinger_window: int = 20      # Bollinger Band SMA window
-    finance_momentum_window: int = 10       # Rate-of-change lookback
-    finance_baseline_ticks: int = 200       # Ticks before Isolation Forest trains
+    finance_volatility_window: int = 20  # Rolling volatility lookback
+    finance_rsi_period: int = 14  # RSI calculation period
+    finance_bollinger_window: int = 20  # Bollinger Band SMA window
+    finance_momentum_window: int = 10  # Rate-of-change lookback
+    finance_baseline_ticks: int = 200  # Ticks before Isolation Forest trains
     finance_flash_crash_sigma: float = 3.0  # Return threshold for flash crash
     finance_volume_zscore_threshold: float = 2.0  # Volume spike threshold
-    finance_cusum_threshold_sigma: float = 5.0    # CUSUM trigger threshold
-    finance_replay_speed: float = 5.0       # Replay multiplier (5x = 5× real-time)
+    finance_cusum_threshold_sigma: float = 5.0  # CUSUM trigger threshold
+    finance_replay_speed: float = 5.0  # Replay multiplier (5x = 5× real-time)
 
     # ── Infrastructure Module ─────────────────────────────
-    infra_poll_interval: float = 2.0   # Seconds between metric polls
-    infra_cpu_critical: float = 95.0   # CPU % to trigger CRITICAL
+    infra_poll_interval: float = 2.0  # Seconds between metric polls
+    infra_cpu_critical: float = 95.0  # CPU % to trigger CRITICAL
     infra_cpu_spike_delta: float = 40.0  # CPU % jump between polls = anomaly
-    infra_ram_warning: float = 85.0    # RAM % for WARNING
-    infra_ram_critical: float = 95.0   # RAM % for CRITICAL
+    infra_ram_warning: float = 85.0  # RAM % for WARNING
+    infra_ram_critical: float = 95.0  # RAM % for CRITICAL
     infra_disk_critical: float = 95.0  # Disk % for CRITICAL
-    infra_baseline_polls: int = 30     # Polls before Isolation Forest trains
+    infra_baseline_polls: int = 30  # Polls before Isolation Forest trains
     infra_log_path: str = "data/sample_syslog.log"
 
     # ── Alert Manager ─────────────────────────────────────
-    alert_cooldown_seconds: int = 10    # Min seconds between same alert type
-    alert_max_history: int = 1000       # Max alerts kept in memory
-    alert_escalation_window: int = 60   # Seconds to watch for escalation
-    alert_escalation_count: int = 3     # WARNINGs in window → auto-CRITICAL
+    alert_cooldown_seconds: int = 10  # Min seconds between same alert type
+    alert_max_history: int = 1000  # Max alerts kept in memory
+    alert_escalation_window: int = 60  # Seconds to watch for escalation
+    alert_escalation_count: int = 3  # WARNINGs in window → auto-CRITICAL
 
     # ── Notifications ─────────────────────────────────────
-    slack_webhook_url: str = ""         # Slack incoming webhook URL
-    discord_webhook_url: str = ""       # Discord webhook URL
-    email_smtp_host: str = ""           # SMTP server hostname
-    email_smtp_port: int = 587          # SMTP port (587 = TLS)
-    email_from: str = ""                # Sender email address
-    email_password: str = ""            # SMTP password / app password
-    email_to: str = ""                  # Recipient email address
+    slack_webhook_url: str = ""  # Slack incoming webhook URL
+    discord_webhook_url: str = ""  # Discord webhook URL
+    email_smtp_host: str = ""  # SMTP server hostname
+    email_smtp_port: int = 587  # SMTP port (587 = TLS)
+    email_from: str = ""  # Sender email address
+    email_password: str = ""  # SMTP password / app password
+    email_to: str = ""  # Recipient email address
     notify_on_severity: str = "CRITICAL"  # Minimum severity for webhook fire
 
     # ── API Server ────────────────────────────────────────
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-    cors_origins: str = "*"             # Comma-separated allowed origins
+    cors_origins: str = "*"  # Comma-separated allowed origins
 
     model_config = {
-        "env_prefix": "IRMDS_",         # All env vars prefixed: IRMDS_API_PORT
-        "env_file": ".env",             # Load from .env in project root
+        "env_prefix": "IRMDS_",  # All env vars prefixed: IRMDS_API_PORT
+        "env_file": ".env",  # Load from .env in project root
         "env_file_encoding": "utf-8",
-        "case_sensitive": False,        # IRMDS_API_PORT = irmds_api_port
-        "extra": "ignore",             # Don't fail on unknown env vars
+        "case_sensitive": False,  # IRMDS_API_PORT = irmds_api_port
+        "extra": "ignore",  # Don't fail on unknown env vars
     }
 
     def get_cors_origins_list(self) -> list[str]:

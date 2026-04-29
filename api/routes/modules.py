@@ -32,20 +32,23 @@ def start_module(module_id: str, registry: PluginRegistry = Depends(get_registry
     """Start a specific module by its ID."""
     try:
         mod = registry.get_module(module_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail=f"Module '{module_id}' not found.")
-    
+    except Exception as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Module '{module_id}' not found.",
+        ) from exc
+
     try:
         registry.start_module(module_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return ModuleActionResponse(
         module_id=module_id,
         action="start",
         status=mod.status.value,
         success=True,
-        message=f"Module '{module_id}' started successfully."
+        message=f"Module '{module_id}' started successfully.",
     )
 
 
@@ -54,20 +57,23 @@ def stop_module(module_id: str, registry: PluginRegistry = Depends(get_registry)
     """Stop a specific module by its ID."""
     try:
         mod = registry.get_module(module_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail=f"Module '{module_id}' not found.")
-    
+    except Exception as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Module '{module_id}' not found.",
+        ) from exc
+
     try:
         registry.stop_module(module_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return ModuleActionResponse(
         module_id=module_id,
         action="stop",
         status=mod.status.value,
         success=True,
-        message=f"Module '{module_id}' stopped successfully."
+        message=f"Module '{module_id}' stopped successfully.",
     )
 
 
@@ -76,25 +82,21 @@ def restart_module(module_id: str, registry: PluginRegistry = Depends(get_regist
     """Restart a specific module (stop, then start)."""
     try:
         mod = registry.get_module(module_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail=f"Module '{module_id}' not found.")
-
-    if mod.status.value in ("running", "starting"):
-        registry.stop_module(module_id)
-    
-    success = registry.start_module(module_id)
-    status_str = mod.status.value
-
-    if not success:
+    except Exception as exc:
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to restart module '{module_id}'."
-        )
+            status_code=404,
+            detail=f"Module '{module_id}' not found.",
+        ) from exc
+
+    try:
+        registry.restart_module(module_id)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     return ModuleActionResponse(
         module_id=module_id,
         action="restart",
-        status=status_str,
+        status=mod.status.value,
         success=True,
-        message=f"Module '{module_id}' restarted successfully."
+        message=f"Module '{module_id}' restarted successfully.",
     )

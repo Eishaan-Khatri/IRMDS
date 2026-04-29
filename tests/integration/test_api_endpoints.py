@@ -29,8 +29,8 @@ def client(app):
 @pytest.fixture(autouse=True)
 def clean_db():
     """Clear database tables before each test."""
-    SessionFactory = get_session_factory()
-    with SessionFactory() as session:
+    session_factory = get_session_factory()
+    with session_factory() as session:
         session.query(AlertRecord).delete()
         session.query(SessionRecord).delete()
         session.commit()
@@ -59,7 +59,7 @@ def test_list_modules(client: TestClient):
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    
+
     # We expect our visual module to be discovered
     module_ids = [m["id"] for m in data]
     assert "visual" in module_ids
@@ -115,8 +115,8 @@ def test_session_lifecycle(client: TestClient):
 def test_alerts_pagination(client: TestClient):
     """Test alert retrieval with pagination and filtering."""
     # Insert dummy alerts into the DB
-    SessionFactory = get_session_factory()
-    with SessionFactory() as session:
+    session_factory = get_session_factory()
+    with session_factory() as session:
         for i in range(15):
             alert = AlertRecord(
                 id=f"alert_{i}",
@@ -124,7 +124,7 @@ def test_alerts_pagination(client: TestClient):
                 module="visual",
                 type="SPEED_ANOMALY" if i % 2 == 0 else "LOITERING",
                 severity="CRITICAL" if i % 2 == 0 else "WARNING",
-                data={"test": True}
+                data={"test": True},
             )
             session.add(alert)
         session.commit()
@@ -154,16 +154,15 @@ def test_websocket_event_streaming(client: TestClient, app):
     """Test real-time event pushing over WebSockets."""
     # Connect via websocket
     with client.websocket_connect("/ws/events?min_severity=WARNING") as websocket:
-        
         # Publish a dummy event to the EventBus directly
         event_bus = app.state.event_bus
         test_event = Event(
             module="network",
             type="PORT_SCAN",
             severity=Severity.CRITICAL,
-            data={"ip": "192.168.1.100"}
+            data={"ip": "192.168.1.100"},
         )
-        
+
         # We must give the async loop a moment to drain the sync queue thread callback
         # Because we're in a synchronous TestClient, we simulate the thread publishing
         event_bus.publish(test_event)

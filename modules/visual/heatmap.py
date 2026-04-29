@@ -24,6 +24,7 @@ Usage:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 import cv2
 import numpy as np
@@ -88,14 +89,22 @@ class Heatmap:
         if self._accumulator.max() == 0:
             # No data yet — return a uniform blue (cold) image
             blank = np.zeros((self._height, self._width), dtype=np.uint8)
-            return cv2.applyColorMap(blank, cv2.COLORMAP_JET)
+            return cast("np.ndarray", cv2.applyColorMap(blank, cv2.COLORMAP_JET))
 
         # Normalize to 0–255 for colormap application
-        normalized = cv2.normalize(
-            self._accumulator, None, 0, 255,
-            cv2.NORM_MINMAX, dtype=cv2.CV_8U,
+        destination = np.zeros((self._height, self._width), dtype=np.uint8)
+        normalized = cast(
+            "np.ndarray",
+            cv2.normalize(
+                self._accumulator,
+                destination,
+                0.0,
+                255.0,
+                cv2.NORM_MINMAX,
+                dtype=cv2.CV_8U,
+            ),
         )
-        return cv2.applyColorMap(normalized, cv2.COLORMAP_JET)
+        return cast("np.ndarray", cv2.applyColorMap(normalized, cv2.COLORMAP_JET))
 
     def save(self, path: str | Path) -> None:
         """Save the heatmap image to disk as PNG.

@@ -23,11 +23,11 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
-import numpy as np
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    import numpy as np
+
     from core.config import IRMDSConfig
 
 
@@ -87,7 +87,7 @@ class Detector:
         self._model_path = config.visual_model_path
         self._confidence = config.visual_confidence
         self._classes = [0]  # Person class by default
-        self._model = None   # Loaded lazily on first detect()
+        self._model: Any | None = None  # Loaded lazily on first detect()
         self.last_latency_ms: float = 0.0
 
     def detect(self, frame: np.ndarray) -> list[Detection]:
@@ -103,10 +103,14 @@ class Detector:
         if self._model is None:
             self._load_model()
 
+        model = self._model
+        if model is None:
+            raise RuntimeError("YOLO model failed to load")
+
         t_start = time.perf_counter()
 
         # Run inference with verbose=False to suppress Ultralytics' per-frame logs
-        results = self._model(
+        results = model(
             frame,
             classes=self._classes,
             conf=self._confidence,
@@ -146,10 +150,15 @@ class Detector:
             confidence = float(box.conf[0])
             class_id = int(box.cls[0])
 
-            detections.append(Detection(
-                x1=x1, y1=y1, x2=x2, y2=y2,
-                confidence=confidence,
-                class_id=class_id,
-            ))
+            detections.append(
+                Detection(
+                    x1=x1,
+                    y1=y1,
+                    x2=x2,
+                    y2=y2,
+                    confidence=confidence,
+                    class_id=class_id,
+                )
+            )
 
         return detections

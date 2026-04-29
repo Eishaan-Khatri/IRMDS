@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from typing import cast
 
 import structlog
 
@@ -58,6 +59,7 @@ def setup_logging(*, json_output: bool = False, log_level: str = "INFO") -> None
         structlog.processors.UnicodeDecoder(),
     ]
 
+    renderer: structlog.types.Processor
     if json_output:
         # Production: machine-readable JSON lines to stdout
         renderer = structlog.processors.JSONRenderer()
@@ -120,4 +122,4 @@ def get_logger(module: str) -> structlog.stdlib.BoundLogger:
         log = get_logger("network")
         log.info("baseline_trained", windows=60, model="IsolationForest")
     """
-    return structlog.get_logger(module=module)
+    return cast("structlog.stdlib.BoundLogger", structlog.get_logger(module=module))

@@ -227,9 +227,7 @@ class TestThreadSafety:
 
         def publish_n(n: int):
             for i in range(n):
-                event_bus.publish(
-                    Event(module="thread", type=f"E{i}", severity=Severity.INFO)
-                )
+                event_bus.publish(Event(module="thread", type=f"E{i}", severity=Severity.INFO))
 
         threads = [threading.Thread(target=publish_n, args=(50,)) for _ in range(4)]
         for t in threads:
