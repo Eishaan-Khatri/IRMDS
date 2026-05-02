@@ -1,9 +1,10 @@
 """
-Main Streamlit Application Entry Point.
+IRMDS dashboard command center.
 """
 
 import json
 import os
+import time
 
 import httpx
 import streamlit as st
@@ -13,123 +14,176 @@ from dashboard.components.ws_client import get_or_create_event_queue, start_webs
 
 API_URL = os.getenv("IRMDS_API_URL", "http://127.0.0.1:8000").rstrip("/")
 
-# ─────────────────────────────────────────────────────────────
-# 1. Page Configuration
-# ─────────────────────────────────────────────────────────────
+
 st.set_page_config(
-    page_title="IRMDS | Real-Time Anomaly Dashboard",
-    page_icon="🛡️",
+    page_title="IRMDS | Command Center",
+    page_icon="IRMDS",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Injects the dark mode, glassmorphism, and hides Streamlit headers
 inject_custom_css()
 
-# ─────────────────────────────────────────────────────────────
-# 2. State & Background Threads
-# ─────────────────────────────────────────────────────────────
 get_or_create_event_queue()
 start_websocket_thread()
 
-# Auto-refresh timer to keep UI synced with the background WebSocket thread
-# In Streamlit 1.30+, st_autorefresh or similar patterns are common, but
-# we can use the native fragment/rerun or just rely on user interaction +
-# a slight manual refresh hook if needed. For now, we will add a small
-# refresh button in the sidebar, or pages can poll.
-# In a true edge production setting, st.rerun() in a loop works, but can flicker.
-
-# ─────────────────────────────────────────────────────────────
-# 3. Sidebar Navigation & Global State
-# ─────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
-        "<h2 style='text-align: center; color: white; tracking: 2px;'>🛡️ IRMDS</h2>",
+        "<h1 style='text-align: center; color: white;'>IRMDS</h1>",
         unsafe_allow_html=True,
     )
+
+    status_color = "#00f3ff" if st.session_state.ws_connected else "#ff0055"
     st.markdown(
-        "<p style='text-align: center; color: #8b949e; font-size: 0.8em; margin-bottom: 2rem;'>Intelligent Real-Time Monitoring</p>",
+        (
+            "<div style='text-align: center; margin-bottom: 2rem;'>"
+            f"<span class='status-pulse' style='background-color: {status_color}; "
+            f"box-shadow: 0 0 10px {status_color};'></span> "
+            "<b>SYSTEM ONLINE</b></div>"
+        ),
         unsafe_allow_html=True,
     )
 
-    status_text = "🟢 Connected" if st.session_state.ws_connected else "🔴 Disconnected"
-    st.markdown(f"**WebSocket Status:** {status_text}")
-
-    # We use Streamlit 1.30+ native multi-page apps (the `pages/` folder).
     st.markdown("---")
-    st.markdown("### Navigation")
+    st.page_link("app.py", label="COMMAND CENTER", icon=":material/monitoring:")
+    st.page_link("pages/01_visual.py", label="VISUAL HUD", icon=":material/visibility:")
 
-    st.page_link("app.py", label="Overview", icon="📊")
-    st.page_link("pages/01_visual.py", label="Visual Detection", icon="👁️")
-    # st.page_link("pages/02_network.py", label="Network Monitor", icon="🌐")
-    # st.page_link("pages/03_finance.py", label="Financial Engine", icon="📈")
-    # st.page_link("pages/04_infra.py", label="Infrastructure", icon="🖥️")
-
-# ─────────────────────────────────────────────────────────────
-# 4. Main Index Page Logic (Fallback if hit directly)
-# ─────────────────────────────────────────────────────────────
-
-# Fetch high-level API status
 try:
     health_res = httpx.get(f"{API_URL}/health", timeout=2)
     api_status = health_res.status_code == 200
 except Exception:
     api_status = False
 
-st.title("System Overview")
-
 if not api_status:
-    st.error(
-        "FastAPI Backend is unreachable. Please start the backend (`irmds start`) to view the dashboard."
-    )
+    st.error("CORE DISCONNECTED: FastAPI backend unreachable.")
     st.stop()
 
-# Actually, the user should be automatically routed to 01_overview.py or we can render overview here
-# To keep it clean, we will just render the overview logic here instead of a separate 01_overview.py
-# Or we can just import it. Let's build the overview right here.
+st.markdown("## SYSTEM INTEGRITY COMMAND CENTER")
 
 col1, col2, col3 = st.columns(3)
 
-# Fetch latest metrics
 try:
-    metrics_res = httpx.get(f"{API_URL}/metrics").json()
+    metrics_res = httpx.get(f"{API_URL}/metrics", timeout=2).json()
     uptime = metrics_res.get("system_uptime_seconds", 0)
     uptime_hrs = uptime / 3600
     uptime_str = f"{uptime_hrs:.1f}h" if uptime_hrs > 1 else f"{uptime / 60:.1f}m"
     running_modules = len(metrics_res.get("modules", []))
 except Exception:
-    uptime_str = "Error"
+    uptime_str = "OFFLINE"
     running_modules = 0
 
 with col1:
-    st.metric(label="System Uptime", value=uptime_str, delta="Online", delta_color="normal")
-
+    st.metric(label="KERNEL UPTIME", value=uptime_str)
 with col2:
-    st.metric(label="Active Modules", value=f"{running_modules}/4", delta="Running")
-
+    st.metric(label="ACTIVE MODULES", value=f"{running_modules}/4")
 with col3:
-    st.metric(label="Events Processed", value=len(st.session_state.event_queue), delta="Live")
+    st.metric(label="LIVE TELEMETRY", value=len(st.session_state.event_queue))
 
-st.markdown("### Real-Time Alert Feed")
+st.markdown("---")
+st.markdown("## SIMULATED COMMAND PLANE")
 
+ctrl_col1, ctrl_col2 = st.columns([1, 2])
+
+with ctrl_col1:
+    st.markdown("### PROPOSE COMMAND")
+    with st.form("propose_cmd_form", clear_on_submit=True):
+        target_device = st.selectbox(
+            "TARGET SYSTEM",
+            ["CNC_01", "HVAC_SYS", "SERVER_RACK", "MAIN_VALVE"],
+        )
+        action = st.selectbox(
+            "ACTION PROTOCOL",
+            ["SHUTDOWN_MACHINE", "REBOOT", "EMERGENCY_STOP", "SET_MAINTENANCE_MODE"],
+        )
+        reason = st.text_input("AUTHORIZATION REASON")
+        dry_run = st.checkbox("SIMULATION MODE", value=True)
+        submitted = st.form_submit_button("PROPOSE DRY-RUN COMMAND")
+
+        if submitted:
+            payload = {
+                "action": action,
+                "target_device": target_device,
+                "payload": {"reason": reason},
+                "dry_run": dry_run,
+            }
+            try:
+                res = httpx.post(f"{API_URL}/commands", json=payload, timeout=5)
+                if res.status_code == 200:
+                    st.toast("DRY-RUN COMMAND PROPOSED")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error(f"PROTOCOL FAILURE: {res.text}")
+            except Exception as exc:
+                st.error(f"COMMUNICATION ERROR: {exc}")
+
+with ctrl_col2:
+    st.markdown("### COMMAND LEDGER")
+    try:
+        cmd_res = httpx.get(f"{API_URL}/commands", params={"limit": 5}, timeout=5)
+        if cmd_res.status_code == 200:
+            commands = cmd_res.json().get("commands", [])
+            if not commands:
+                st.caption("NO ACTIVE COMMANDS IN LEDGER")
+            else:
+                for cmd in commands:
+                    state_labels = {
+                        "pending": "PENDING",
+                        "approved": "APPROVED",
+                        "executing": "EXECUTING",
+                        "completed": "COMPLETED",
+                        "failed": "FAILED",
+                    }
+                    state_label = state_labels.get(cmd["state"], cmd["state"].upper())
+
+                    with st.container(border=True):
+                        c_a, c_b, c_c = st.columns([3, 1, 1])
+                        with c_a:
+                            st.markdown(f"**{cmd['action']}** -> `{cmd['target_device']}`")
+                            if cmd["payload"].get("reason"):
+                                st.caption(f"AUTH: {cmd['payload']['reason']}")
+                        with c_b:
+                            st.markdown(f"`{state_label}`")
+                        with c_c:
+                            if cmd["state"] == "pending":
+                                if st.button("AUTHORIZE", key=f"auth_{cmd['id']}"):
+                                    httpx.post(
+                                        f"{API_URL}/commands/{cmd['id']}/approve",
+                                        timeout=5,
+                                    )
+                                    st.rerun()
+        else:
+            st.error("LEDGER OFFLINE")
+    except Exception as exc:
+        st.error(f"SYNC ERROR: {exc}")
+
+st.markdown("---")
+st.markdown("### LIVE TELEMETRY STREAM")
 st.markdown('<div class="live-feed-container">', unsafe_allow_html=True)
 if not st.session_state.event_queue:
     st.markdown(
-        "<p style='color: #8b949e; text-align: center; padding: 20px;'>Waiting for events from EventBus...</p>",
+        "<p style='color: #888; text-align: center; padding: 20px;'>AWAITING TELEMETRY...</p>",
         unsafe_allow_html=True,
     )
 else:
-    for evt in st.session_state.event_queue:
+    for evt in list(st.session_state.event_queue)[-20:]:
         sev = evt.get("severity", "INFO")
-        time_str = evt.get("timestamp", "")
-        # Parse timestamp to just time if possible to make it compact
-        if "T" in time_str:
-            time_str = time_str.split("T")[1][:8]
+        timestamp = evt.get("timestamp", "")
+        time_str = timestamp.split("T")[1][:8] if "T" in timestamp else ""
 
-        color_class = f"alert-severity-{sev}"
-        text = f"[{time_str}] <span class='{color_class}'>[{sev}]</span> <b>{evt.get('module')}</b>: {evt.get('type')}"
-        if evt.get("data"):
-            text += f" <span style='color: #8b949e;'>| {json.dumps(evt.get('data'))}</span>"
-
-        st.markdown(f"<div class='alert-entry'>{text}</div>", unsafe_allow_html=True)
+        if evt.get("type") == "COMMAND_EXECUTED":
+            st.markdown(
+                f"<div class='alert-entry alert-severity-INFO'>[{time_str}] "
+                f"<b>DRY-RUN COMMAND</b>: {evt.get('data', {}).get('action')} on "
+                f"{evt.get('data', {}).get('target_device')} COMPLETED</div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            module = evt.get("module", "unknown")
+            st.markdown(
+                f"<div class='alert-entry alert-severity-{sev}'>[{time_str}] "
+                f"<b>{module.upper()}</b>: {evt.get('type')} "
+                f"<span style='color: #666;'>| {json.dumps(evt.get('data'))}</span></div>",
+                unsafe_allow_html=True,
+            )
 st.markdown("</div>", unsafe_allow_html=True)

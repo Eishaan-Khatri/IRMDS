@@ -1,17 +1,18 @@
 """
-Finance data source — replays OHLCV data from CSV.
+Finance data source: replays OHLCV data from CSV.
 """
 
 import csv
 import time
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator
 
 
 @dataclass
 class StockTick:
     """A single row of OHLCV data."""
+
     timestamp: str
     open: float
     high: float
@@ -21,7 +22,7 @@ class StockTick:
 
 
 class FinanceDataSource:
-    """Loads and yields stock ticks from a CSV file for real-time simulation."""
+    """Load and yield stock ticks from a CSV file for simulation."""
 
     def __init__(self, file_path: str, replay_speed: float = 1.0):
         self.file_path = Path(file_path)
@@ -29,11 +30,11 @@ class FinanceDataSource:
         self.ticks_count = 0
 
     def stream(self) -> Iterator[StockTick]:
-        """Generator that yields ticks one by one, simulating a live feed."""
+        """Yield ticks one by one, simulating a live feed."""
         if not self.file_path.exists():
             raise FileNotFoundError(f"Stock data not found: {self.file_path}")
 
-        with open(self.file_path, "r") as f:
+        with self.file_path.open() as f:
             reader = csv.DictReader(f)
             for row in reader:
                 tick = StockTick(
@@ -46,9 +47,6 @@ class FinanceDataSource:
                 )
                 self.ticks_count += 1
                 yield tick
-                
-                # In real use, we might sleep to simulate real-time
-                # but for IRMDS v1 simulation we just yield as fast as needed
-                # or with a small throttle if requested.
+
                 if self.replay_speed > 0:
                     time.sleep(1.0 / self.replay_speed)

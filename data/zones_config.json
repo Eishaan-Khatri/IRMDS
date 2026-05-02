@@ -19,7 +19,7 @@
                 400
             ]
         ],
-        "loiter_threshold": 5,
+        "loiter_seconds": 5,
         "crowd_threshold": 3
     },
     {
@@ -42,7 +42,7 @@
                 300
             ]
         ],
-        "loiter_threshold": 2,
+        "loiter_seconds": 2,
         "crowd_threshold": 1
     }
 ]

@@ -24,7 +24,7 @@ class InfrastructurePipeline(BaseModule):
         """Main polling loop."""
         collector = SystemCollector()
         log_analyzer = LogAnalyzer(self.config.infra_log_path)
-        
+
         self.log.info("infra_pipeline_running", poll_interval=self.config.infra_poll_interval)
 
         while self._running.is_set():
@@ -32,7 +32,7 @@ class InfrastructurePipeline(BaseModule):
                 # 1. Collect System Metrics
                 metrics = collector.collect()
                 self.metrics.push(self.module_id, metrics)
-                
+
                 # 2. Check Static Thresholds
                 self._check_thresholds(metrics)
 
@@ -42,9 +42,13 @@ class InfrastructurePipeline(BaseModule):
                     self.event_bus.publish(
                         Event(
                             module=self.module_id,
-                            type="LOG_ANOMALY",
-                            severity=Severity.CRITICAL if anomaly["severity"] == "CRITICAL" else Severity.WARNING,
-                            data=anomaly
+                            type="INFRA_LOG_ANOMALY",
+                            severity=(
+                                Severity.CRITICAL
+                                if anomaly["severity"] == "CRITICAL"
+                                else Severity.WARNING
+                            ),
+                            data=anomaly,
                         )
                     )
 
@@ -61,9 +65,9 @@ class InfrastructurePipeline(BaseModule):
             self.event_bus.publish(
                 Event(
                     module=self.module_id,
-                    type="CPU_CRITICAL",
+                    type="INFRA_CPU_HIGH",
                     severity=Severity.CRITICAL,
-                    data={"usage": metrics["cpu_usage_pct"]}
+                    data={"usage": metrics["cpu_usage_pct"]},
                 )
             )
 
@@ -71,9 +75,9 @@ class InfrastructurePipeline(BaseModule):
             self.event_bus.publish(
                 Event(
                     module=self.module_id,
-                    type="RAM_CRITICAL",
+                    type="INFRA_RAM_HIGH",
                     severity=Severity.CRITICAL,
-                    data={"usage": metrics["mem_usage_pct"]}
+                    data={"usage": metrics["mem_usage_pct"]},
                 )
             )
 
@@ -81,7 +85,7 @@ class InfrastructurePipeline(BaseModule):
         return {
             "healthy": self.status.value == "running",
             "status": self.status.value,
-            "details": {}
+            "details": self.get_metrics(),
         }
 
     def get_metrics(self) -> dict[str, Any]:

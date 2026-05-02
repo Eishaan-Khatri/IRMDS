@@ -1,5 +1,5 @@
 """
-Finance feature extractor — computes technical indicators.
+Finance feature extractor: computes technical indicators.
 """
 
 import math
@@ -9,12 +9,12 @@ import numpy as np
 
 
 class FinanceFeatureExtractor:
-    """Computes technical indicators from a rolling window of price ticks."""
+    """Compute technical indicators from a rolling window of price ticks."""
 
     def __init__(self, window_size: int = 50):
         self.window_size = window_size
-        self.history = deque(maxlen=window_size)
-        self.returns_history = deque(maxlen=window_size)
+        self.history: deque[float] = deque(maxlen=window_size)
+        self.returns_history: deque[float] = deque(maxlen=window_size)
 
     def update(self, close_price: float) -> dict[str, float] | None:
         """Add a new price and return features if history is sufficient."""
@@ -22,27 +22,20 @@ class FinanceFeatureExtractor:
             prev_close = self.history[-1]
             log_return = math.log(close_price / prev_close)
             self.returns_history.append(log_return)
-        
+
         self.history.append(close_price)
-        
+
         if len(self.history) < self.window_size:
             return None
 
-        # Compute Features
-        # 1. Volatility (Std Dev of returns)
         returns_arr = np.array(self.returns_history)
         volatility = float(np.std(returns_arr))
-        
-        # 2. RSI (14 period)
         rsi = self._compute_rsi(14)
-        
-        # 3. Bollinger Band Position
+
         prices_arr = np.array(self.history)
         sma = np.mean(prices_arr[-20:])
         std = np.std(prices_arr[-20:])
         bollinger = (close_price - sma) / (2 * std) if std > 0 else 0
-        
-        # 4. Momentum (10 ticks)
         momentum = (close_price / self.history[-10]) - 1 if len(self.history) >= 10 else 0
 
         return {
@@ -50,23 +43,23 @@ class FinanceFeatureExtractor:
             "volatility": volatility,
             "rsi": rsi,
             "bollinger_position": bollinger,
-            "momentum": momentum
+            "momentum": momentum,
         }
 
     def _compute_rsi(self, period: int) -> float:
         """Compute Relative Strength Index."""
         if len(self.returns_history) < period:
             return 50.0
-            
+
         returns = list(self.returns_history)[-period:]
         gains = [r for r in returns if r > 0]
         losses = [abs(r) for r in returns if r < 0]
-        
+
         avg_gain = sum(gains) / period
         avg_loss = sum(losses) / period
-        
+
         if avg_loss == 0:
             return 100.0
-            
+
         rs = avg_gain / avg_loss
         return 100 - (100 / (1 + rs))

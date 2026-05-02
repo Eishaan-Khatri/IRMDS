@@ -8,12 +8,14 @@ and wires the the core background systems into the ASGI lifespan.
 import time
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routes import alerts, export, metrics, modules, sessions, system, ws
+from api.routes import alerts, commands, export, metrics, modules, sessions, system, ws
+from core.actuation_gateway import ActuationGateway
 from core.alert_manager import AlertManager
 from core.config import get_config
+from core.command_bus import CommandBus
 from core.database import init_db
 from core.event_bus import EventBus
 from core.logger import get_logger
@@ -47,11 +49,15 @@ async def lifespan(app: FastAPI):
     # 2. Init Core Infrastructure
     config = get_config()
     event_bus = EventBus(max_history=config.alert_max_history)
+    command_bus = CommandBus()
     metrics = MetricsCollector()
 
-    # 3. Init and Start Alert Manager
+    # 3. Init and Start Alert Manager & Actuation Gateway
     alert_manager = AlertManager(event_bus, config)
     alert_manager.start()
+
+    actuation_gateway = ActuationGateway(command_bus, event_bus)
+    actuation_gateway.start()
 
     # 4. Plugin Discovery
     registry = PluginRegistry(event_bus, metrics, config)
@@ -60,6 +66,8 @@ async def lifespan(app: FastAPI):
 
     # 5. Bind globally to app state so dependencies.py can inject them
     app.state.event_bus = event_bus
+    app.state.command_bus = command_bus
+    app.state.actuation_gateway = actuation_gateway
     app.state.metrics = metrics
     app.state.registry = registry
     app.state.alert_manager = alert_manager
@@ -67,11 +75,12 @@ async def lifespan(app: FastAPI):
 
     log.info("irmds_api_ready", bind=f"{config.api_host}:{config.api_port}")
 
-    yield  # ─── RUNNING BLOCK ───
+    yield  # Running block
 
     log.info("irmds_api_shutting_down")
 
     # 6. Clean Shutdown
+    actuation_gateway.stop()
     alert_manager.stop()
     registry.stop_all()
 
@@ -108,9 +117,7 @@ def create_app() -> FastAPI:
             allow_headers=["*"],
         )
 
-    # ── Request Logging Middleware ──────────────────────────
-    from fastapi import Request
-
+    # Request logging middleware
     @app.middleware("http")
     async def log_requests(request: Request, call_next):
         start_time = time.perf_counter()
@@ -128,6 +135,7 @@ def create_app() -> FastAPI:
     # Register Routers
     app.include_router(system.router, tags=["System"])
     app.include_router(modules.router)
+    app.include_router(commands.router)
     app.include_router(alerts.router)
     app.include_router(metrics.router)
     app.include_router(sessions.router)

@@ -1,125 +1,164 @@
 """
-Minimalist Enterprise CSS Injector for Streamlit Dashboard.
+Premium "Deep Space" CSS Injector for IRMDS Dashboard.
 
-Applies clean, high-contrast, border-driven aesthetic inspired by
-Vercel, GitHub, and Stripe dashboards. Strict layout principles.
+Applies a high-fidelity, glassmorphic aesthetic with glowing accents,
+custom animations, and refined typography.
 """
 
 import streamlit as st
 
 
 def inject_custom_css():
-    """Injects global CSS into the Streamlit app to apply standard enterprise styling."""
+    """Injects premium CSS into the Streamlit app."""
 
     css = """
     <style>
-    /* 1. Global Typography & Background */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+    :root {
+        --bg-deep: #050508;
+        --glass-bg: rgba(17, 17, 25, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --primary-glow: rgba(0, 243, 255, 0.5);
+        --accent-cyan: #00f3ff;
+        --accent-violet: #bd00ff;
+        --text-main: #e0e0e0;
+        --text-dim: #888888;
+    }
+
+    /* 1. Global Reset & Background */
     html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
-        background-color: #000000 !important; /* Vercel/Stripe stark black */
-        color: #ededed !important;
+        font-family: 'Outfit', sans-serif !important;
+        background-color: var(--bg-deep) !important;
+        color: var(--text-main) !important;
     }
 
-    /* Solid black background for main app */
     .stApp {
-        background: #0a0a0a !important;
+        background: radial-gradient(circle at 50% -20%, #1a1a2e 0%, var(--bg-deep) 100%) !important;
     }
 
-    /* 2. Hide Streamlit Cruft safely */
+    /* Hide Streamlit elements */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
+    div[data-testid="stDecoration"] {display: none;}
 
-    /* 3. Clean Cards (No Glass, No Blur) */
-    div[data-testid="stMetric"], div.css-1r6slb0, div.stForm {
-        background-color: #111111 !important;
-        border: 1px solid #333333 !important;
-        border-radius: 6px !important;
-        padding: 1.2rem !important;
-        box-shadow: none !important;
+    /* 2. Glassmorphic Cards */
+    div[data-testid="stMetric"], div.stForm, .premium-card {
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 12px !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
+        transition: all 0.3s ease !important;
     }
 
-    /* Hover effect is structural, not flashy */
     div[data-testid="stMetric"]:hover {
-        border-color: #555555 !important;
+        border-color: var(--accent-cyan) !important;
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.2) !important;
+        transform: translateY(-2px);
     }
 
-    /* metric labels (clean, uppercase) */
+    /* 3. Metrics Overhaul */
     div[data-testid="stMetricLabel"] {
-        font-size: 0.75rem !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 0.85rem !important;
         font-weight: 500 !important;
-        color: #888888 !important;
+        color: var(--text-dim) !important;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
         margin-bottom: 0.5rem;
     }
 
-    /* metric values (big, readable) */
     div[data-testid="stMetricValue"] {
-        font-size: 2rem !important;
-        font-weight: 600 !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
         color: #ffffff !important;
-        line-height: 1.1 !important;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
-    /* delta indicator */
-    div[data-testid="stMetricDelta"] {
-        font-size: 0.85rem !important;
-        margin-top: 0.25rem;
-    }
-
-    /* 4. Sidebar Styling (Minimal) */
+    /* 4. Sidebar - Elegant Glow */
     section[data-testid="stSidebar"] {
-        background-color: #000000 !important;
-        border-right: 1px solid #333333 !important;
+        background-color: rgba(5, 5, 8, 0.95) !important;
+        backdrop-filter: blur(10px);
+        border-right: 1px solid var(--glass-border) !important;
     }
 
-    /* 5. Terminal Feed (Monospace, Clean) */
+    /* 5. Custom Control Plane Styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #00f3ff 0%, #0070f3 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.6rem 1.5rem !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 4px 15px rgba(0, 112, 243, 0.3) !important;
+    }
+
+    .stButton > button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.5) !important;
+    }
+
+    /* 6. Terminal HUD */
     .live-feed-container {
         max-height: 400px;
         overflow-y: auto;
-        background-color: #111111;
-        border: 1px solid #333333;
-        border-radius: 6px;
-        padding: 12px;
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-        font-size: 0.8rem;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1rem;
+        font-family: 'JetBrains Mono', monospace;
     }
 
     .alert-entry {
-        margin-bottom: 4px;
-        padding-bottom: 4px;
-        border-bottom: 1px solid #222222;
-        color: #cccccc;
+        margin-bottom: 8px;
+        padding: 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 3px solid transparent;
+        transition: background 0.2s ease;
     }
 
-    /* Clean enterprise colors: strict blue, yellow, red */
-    .alert-severity-INFO { color: #0070f3; font-weight: 600; }
-    .alert-severity-WARNING { color: #f5a623; font-weight: 600; }
-    .alert-severity-CRITICAL { color: #ff0000; font-weight: 600; }
-
-    /* Standard Flat Scrollbar */
-    ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: #333333;
-        border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555555;
+    .alert-entry:hover {
+        background: rgba(255, 255, 255, 0.05);
     }
 
-    /* Typography */
+    .alert-severity-INFO { border-left-color: var(--accent-cyan); }
+    .alert-severity-WARNING { border-left-color: #f5a623; }
+    .alert-severity-CRITICAL { border-left-color: #ff0055; box-shadow: inset 50px 0 30px -30px rgba(255, 0, 85, 0.1); }
+
+    /* 7. Typography */
     h1, h2, h3 {
-        font-weight: 600 !important;
-        letter-spacing: -0.02em !important;
+        font-family: 'Outfit', sans-serif !important;
+        background: linear-gradient(to bottom right, #fff 30%, #888 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.03em !important;
+    }
+
+    /* 8. Pulsing Status Indicator */
+    .status-pulse {
+        width: 10px;
+        height: 10px;
+        background-color: var(--accent-cyan);
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        box-shadow: 0 0 10px var(--accent-cyan);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 243, 255, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
     }
     </style>
     """

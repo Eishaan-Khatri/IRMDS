@@ -4,7 +4,6 @@ Finance anomaly detection pipeline.
 
 from __future__ import annotations
 
-import time
 from typing import Any
 
 from core.base_module import BaseModule
@@ -25,10 +24,13 @@ class FinancePipeline(BaseModule):
         """Main replayer loop."""
         source = FinanceDataSource(
             file_path=self.config.finance_data_path,
-            replay_speed=self.config.finance_replay_speed
+            replay_speed=self.config.finance_replay_speed,
         )
-        extractor = FinanceFeatureExtractor()
-        detector = FinanceAnomalyDetector()
+        extractor = FinanceFeatureExtractor(window_size=50)
+        detector = FinanceAnomalyDetector(
+            baseline_ticks=self.config.finance_baseline_ticks,
+            contamination=0.05,
+        )
 
         self.log.info("finance_pipeline_running", source=self.config.finance_data_path)
 
@@ -49,7 +51,7 @@ class FinancePipeline(BaseModule):
                     "volume": tick.volume,
                     **features,
                     "anomaly_score": score,
-                    "baseline_ready": detector.baseline_ready
+                    "baseline_ready": detector.baseline_ready,
                 }
                 self.metrics.push(self.module_id, metrics)
 
@@ -59,7 +61,7 @@ class FinancePipeline(BaseModule):
                         module=self.module_id,
                         type="FIN_METRICS",
                         severity=Severity.INFO,
-                        data=metrics
+                        data=metrics,
                     )
                 )
 
@@ -73,8 +75,8 @@ class FinancePipeline(BaseModule):
                             data={
                                 "type": anomaly_type,
                                 "price": tick.close,
-                                "features": features
-                            }
+                                "features": features,
+                            },
                         )
                     )
 
@@ -88,7 +90,7 @@ class FinancePipeline(BaseModule):
         return {
             "healthy": self.status.value == "running",
             "status": self.status.value,
-            "details": {}
+            "details": self.get_metrics(),
         }
 
     def get_metrics(self) -> dict[str, Any]:
