@@ -1,8 +1,48 @@
 [
     {
-        "name": "Zone A",
-        "points": [[160, 120], [480, 120], [480, 360], [160, 360]],
-        "crowd_threshold": 3,
-        "loiter_seconds": 4
+        "name": "Entrance",
+        "points": [
+            [
+                100,
+                100
+            ],
+            [
+                300,
+                100
+            ],
+            [
+                300,
+                400
+            ],
+            [
+                100,
+                400
+            ]
+        ],
+        "loiter_threshold": 5,
+        "crowd_threshold": 3
+    },
+    {
+        "name": "Restricted Area",
+        "points": [
+            [
+                400,
+                50
+            ],
+            [
+                600,
+                50
+            ],
+            [
+                600,
+                300
+            ],
+            [
+                400,
+                300
+            ]
+        ],
+        "loiter_threshold": 2,
+        "crowd_threshold": 1
     }
 ]

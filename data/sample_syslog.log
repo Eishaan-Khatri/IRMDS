@@ -1,0 +1,500 @@
+Apr 29 08:08:20 DISK[849]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:08:27 DB[617]: [ERROR] Connection refused by peer
+Apr 29 08:08:34 KERNEL[232]: [INFO] Database query optimized
+Apr 29 08:08:41 DISK[811]: [INFO] User login successful
+Apr 29 08:08:48 KERNEL[864]: [INFO] User login successful
+Apr 29 08:08:55 KERNEL[221]: [ERROR] Failed to write to buffer
+Apr 29 08:09:02 API[223]: [WARN] Disk usage exceeding 80%
+Apr 29 08:09:09 SYSTEMD[635]: [INFO] User login successful
+Apr 29 08:09:16 KERNEL[483]: [INFO] Database query optimized
+Apr 29 08:09:23 SYSTEMD[910]: [INFO] User login successful
+Apr 29 08:09:30 KERNEL[149]: [INFO] Database query optimized
+Apr 29 08:09:37 SYSTEMD[287]: [ERROR] Connection refused by peer
+Apr 29 08:09:44 DISK[660]: [INFO] User login successful
+Apr 29 08:09:51 SYSTEMD[527]: [INFO] User login successful
+Apr 29 08:09:58 DB[445]: [INFO] Database query optimized
+Apr 29 08:10:05 DB[880]: [INFO] User login successful
+Apr 29 08:10:12 KERNEL[879]: [INFO] Database query optimized
+Apr 29 08:10:19 DB[987]: [INFO] User login successful
+Apr 29 08:10:26 DISK[496]: [INFO] Database query optimized
+Apr 29 08:10:33 KERNEL[653]: [ERROR] Failed to write to buffer
+Apr 29 08:10:40 AUTH[853]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:10:47 SYSTEMD[824]: [INFO] User login successful
+Apr 29 08:10:54 AUTH[674]: [INFO] Database query optimized
+Apr 29 08:11:01 DISK[297]: [INFO] User login successful
+Apr 29 08:11:08 API[683]: [INFO] User login successful
+Apr 29 08:11:15 API[614]: [INFO] Database query optimized
+Apr 29 08:11:22 AUTH[119]: [INFO] User login successful
+Apr 29 08:11:29 SYSTEMD[949]: [INFO] User login successful
+Apr 29 08:11:36 DISK[186]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:11:43 API[703]: [INFO] Database query optimized
+Apr 29 08:11:50 AUTH[448]: [INFO] User login successful
+Apr 29 08:11:57 DB[980]: [INFO] User login successful
+Apr 29 08:12:04 API[193]: [INFO] Database query optimized
+Apr 29 08:12:11 AUTH[392]: [ERROR] Connection refused by peer
+Apr 29 08:12:18 KERNEL[257]: [INFO] User login successful
+Apr 29 08:12:25 SYSTEMD[160]: [ERROR] Connection refused by peer
+Apr 29 08:12:32 API[127]: [ERROR] Connection refused by peer
+Apr 29 08:12:39 DISK[201]: [INFO] Database query optimized
+Apr 29 08:12:46 SYSTEMD[364]: [INFO] Database query optimized
+Apr 29 08:12:53 DB[153]: [WARN] Disk usage exceeding 80%
+Apr 29 08:13:00 KERNEL[604]: [INFO] User login successful
+Apr 29 08:13:07 API[217]: [INFO] Database query optimized
+Apr 29 08:13:14 SYSTEMD[666]: [INFO] Database query optimized
+Apr 29 08:13:21 DB[517]: [INFO] User login successful
+Apr 29 08:13:28 DISK[375]: [INFO] User login successful
+Apr 29 08:13:35 API[352]: [WARN] Disk usage exceeding 80%
+Apr 29 08:13:42 API[411]: [INFO] User login successful
+Apr 29 08:13:49 API[966]: [INFO] User login successful
+Apr 29 08:13:56 DISK[482]: [INFO] User login successful
+Apr 29 08:14:03 API[650]: [ERROR] Connection refused by peer
+Apr 29 08:14:10 DB[142]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:14:17 AUTH[768]: [ERROR] Failed to write to buffer
+Apr 29 08:14:24 KERNEL[379]: [INFO] Database query optimized
+Apr 29 08:14:31 API[459]: [INFO] Database query optimized
+Apr 29 08:14:38 DISK[146]: [INFO] Database query optimized
+Apr 29 08:14:45 KERNEL[407]: [INFO] User login successful
+Apr 29 08:14:52 AUTH[950]: [INFO] User login successful
+Apr 29 08:14:59 KERNEL[999]: [INFO] Database query optimized
+Apr 29 08:15:06 DB[798]: [INFO] Database query optimized
+Apr 29 08:15:13 SYSTEMD[379]: [INFO] Database query optimized
+Apr 29 08:15:20 KERNEL[449]: [INFO] Database query optimized
+Apr 29 08:15:27 KERNEL[116]: [INFO] Database query optimized
+Apr 29 08:15:34 DISK[723]: [INFO] User login successful
+Apr 29 08:15:41 DB[788]: [INFO] User login successful
+Apr 29 08:15:48 KERNEL[880]: [INFO] Database query optimized
+Apr 29 08:15:55 DB[651]: [INFO] User login successful
+Apr 29 08:16:02 AUTH[788]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:16:09 AUTH[947]: [INFO] Database query optimized
+Apr 29 08:16:16 API[959]: [INFO] User login successful
+Apr 29 08:16:23 DISK[573]: [WARN] Disk usage exceeding 80%
+Apr 29 08:16:30 SYSTEMD[109]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:16:37 KERNEL[796]: [INFO] Database query optimized
+Apr 29 08:16:44 DISK[935]: [INFO] User login successful
+Apr 29 08:16:51 API[339]: [INFO] User login successful
+Apr 29 08:16:58 DB[387]: [WARN] Disk usage exceeding 80%
+Apr 29 08:17:05 DB[107]: [ERROR] Connection refused by peer
+Apr 29 08:17:12 KERNEL[213]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:17:19 SYSTEMD[274]: [INFO] Database query optimized
+Apr 29 08:17:26 API[166]: [INFO] User login successful
+Apr 29 08:17:33 API[230]: [INFO] User login successful
+Apr 29 08:17:40 SYSTEMD[635]: [ERROR] Connection refused by peer
+Apr 29 08:17:47 DISK[968]: [INFO] User login successful
+Apr 29 08:17:54 DISK[797]: [INFO] Database query optimized
+Apr 29 08:18:01 API[537]: [WARN] Disk usage exceeding 80%
+Apr 29 08:18:08 DISK[974]: [INFO] User login successful
+Apr 29 08:18:15 SYSTEMD[380]: [INFO] Database query optimized
+Apr 29 08:18:22 AUTH[607]: [INFO] Database query optimized
+Apr 29 08:18:29 SYSTEMD[838]: [INFO] User login successful
+Apr 29 08:18:36 KERNEL[645]: [INFO] Database query optimized
+Apr 29 08:18:43 DB[299]: [INFO] Database query optimized
+Apr 29 08:18:50 SYSTEMD[855]: [INFO] User login successful
+Apr 29 08:18:57 KERNEL[176]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:19:04 KERNEL[418]: [INFO] Database query optimized
+Apr 29 08:19:11 AUTH[128]: [INFO] User login successful
+Apr 29 08:19:18 DB[706]: [INFO] User login successful
+Apr 29 08:19:25 DISK[353]: [ERROR] Failed to write to buffer
+Apr 29 08:19:32 AUTH[952]: [INFO] Database query optimized
+Apr 29 08:19:39 AUTH[174]: [ERROR] Connection refused by peer
+Apr 29 08:19:46 API[740]: [INFO] User login successful
+Apr 29 08:19:53 DB[162]: [INFO] User login successful
+Apr 29 08:20:00 AUTH[901]: [INFO] User login successful
+Apr 29 08:20:07 KERNEL[156]: [INFO] Database query optimized
+Apr 29 08:20:14 SYSTEMD[167]: [INFO] Database query optimized
+Apr 29 08:20:21 AUTH[401]: [INFO] User login successful
+Apr 29 08:20:28 DB[338]: [INFO] Database query optimized
+Apr 29 08:20:35 API[564]: [INFO] User login successful
+Apr 29 08:20:42 DB[735]: [INFO] Database query optimized
+Apr 29 08:20:49 API[564]: [INFO] User login successful
+Apr 29 08:20:56 API[210]: [INFO] User login successful
+Apr 29 08:21:03 AUTH[707]: [INFO] User login successful
+Apr 29 08:21:10 KERNEL[752]: [ERROR] Connection refused by peer
+Apr 29 08:21:17 API[592]: [INFO] Database query optimized
+Apr 29 08:21:24 DISK[348]: [INFO] User login successful
+Apr 29 08:21:31 KERNEL[230]: [INFO] User login successful
+Apr 29 08:21:38 SYSTEMD[418]: [INFO] Database query optimized
+Apr 29 08:21:45 API[250]: [ERROR] Connection refused by peer
+Apr 29 08:21:52 DB[398]: [INFO] Database query optimized
+Apr 29 08:21:59 SYSTEMD[158]: [ERROR] Connection refused by peer
+Apr 29 08:22:06 KERNEL[532]: [INFO] User login successful
+Apr 29 08:22:13 SYSTEMD[755]: [INFO] User login successful
+Apr 29 08:22:20 KERNEL[293]: [INFO] Database query optimized
+Apr 29 08:22:27 DISK[714]: [INFO] Database query optimized
+Apr 29 08:22:34 DISK[730]: [INFO] Database query optimized
+Apr 29 08:22:41 SYSTEMD[207]: [INFO] User login successful
+Apr 29 08:22:48 DB[607]: [WARN] Disk usage exceeding 80%
+Apr 29 08:22:55 KERNEL[809]: [ERROR] Connection refused by peer
+Apr 29 08:23:02 KERNEL[344]: [INFO] User login successful
+Apr 29 08:23:09 DB[926]: [INFO] Database query optimized
+Apr 29 08:23:16 DISK[288]: [INFO] Database query optimized
+Apr 29 08:23:23 AUTH[466]: [INFO] User login successful
+Apr 29 08:23:30 AUTH[397]: [INFO] User login successful
+Apr 29 08:23:37 DB[144]: [INFO] Database query optimized
+Apr 29 08:23:44 AUTH[278]: [INFO] Database query optimized
+Apr 29 08:23:51 KERNEL[447]: [ERROR] Connection refused by peer
+Apr 29 08:23:58 API[122]: [INFO] User login successful
+Apr 29 08:24:05 KERNEL[121]: [WARN] Disk usage exceeding 80%
+Apr 29 08:24:12 DISK[446]: [INFO] User login successful
+Apr 29 08:24:19 KERNEL[478]: [INFO] User login successful
+Apr 29 08:24:26 SYSTEMD[999]: [INFO] Database query optimized
+Apr 29 08:24:33 DISK[233]: [INFO] User login successful
+Apr 29 08:24:40 KERNEL[811]: [INFO] Database query optimized
+Apr 29 08:24:47 SYSTEMD[751]: [INFO] Database query optimized
+Apr 29 08:24:54 KERNEL[974]: [ERROR] Connection refused by peer
+Apr 29 08:25:01 API[435]: [INFO] User login successful
+Apr 29 08:25:08 KERNEL[993]: [INFO] Database query optimized
+Apr 29 08:25:15 KERNEL[314]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:25:22 DISK[909]: [INFO] Database query optimized
+Apr 29 08:25:29 DISK[620]: [INFO] User login successful
+Apr 29 08:25:36 DB[610]: [INFO] Database query optimized
+Apr 29 08:25:43 API[829]: [INFO] Database query optimized
+Apr 29 08:25:50 SYSTEMD[832]: [INFO] Database query optimized
+Apr 29 08:25:57 DB[753]: [INFO] Database query optimized
+Apr 29 08:26:04 API[324]: [INFO] User login successful
+Apr 29 08:26:11 KERNEL[505]: [INFO] User login successful
+Apr 29 08:26:18 KERNEL[685]: [INFO] Database query optimized
+Apr 29 08:26:25 KERNEL[360]: [ERROR] Failed to write to buffer
+Apr 29 08:26:32 API[402]: [INFO] User login successful
+Apr 29 08:26:39 DB[697]: [INFO] User login successful
+Apr 29 08:26:46 AUTH[536]: [INFO] Database query optimized
+Apr 29 08:26:53 DB[476]: [INFO] Database query optimized
+Apr 29 08:27:00 DB[125]: [INFO] Database query optimized
+Apr 29 08:27:07 KERNEL[760]: [INFO] Database query optimized
+Apr 29 08:27:14 AUTH[401]: [INFO] User login successful
+Apr 29 08:27:21 API[904]: [INFO] User login successful
+Apr 29 08:27:28 SYSTEMD[221]: [WARN] Disk usage exceeding 80%
+Apr 29 08:27:35 AUTH[441]: [INFO] User login successful
+Apr 29 08:27:42 KERNEL[409]: [INFO] Database query optimized
+Apr 29 08:27:49 DISK[295]: [ERROR] Failed to write to buffer
+Apr 29 08:27:56 DISK[975]: [INFO] User login successful
+Apr 29 08:28:03 DISK[108]: [INFO] Database query optimized
+Apr 29 08:28:10 SYSTEMD[901]: [INFO] Database query optimized
+Apr 29 08:28:17 DB[583]: [WARN] Disk usage exceeding 80%
+Apr 29 08:28:24 DISK[986]: [INFO] User login successful
+Apr 29 08:28:31 DB[585]: [INFO] User login successful
+Apr 29 08:28:38 KERNEL[839]: [INFO] Database query optimized
+Apr 29 08:28:45 DB[420]: [INFO] User login successful
+Apr 29 08:28:52 KERNEL[314]: [INFO] Database query optimized
+Apr 29 08:28:59 DB[483]: [INFO] User login successful
+Apr 29 08:29:06 KERNEL[412]: [INFO] User login successful
+Apr 29 08:29:13 DISK[447]: [INFO] Database query optimized
+Apr 29 08:29:20 KERNEL[881]: [INFO] Database query optimized
+Apr 29 08:29:27 DISK[701]: [INFO] Database query optimized
+Apr 29 08:29:34 AUTH[242]: [INFO] User login successful
+Apr 29 08:29:41 KERNEL[681]: [ERROR] Failed to write to buffer
+Apr 29 08:29:48 DISK[490]: [INFO] Database query optimized
+Apr 29 08:29:55 KERNEL[647]: [WARN] Disk usage exceeding 80%
+Apr 29 08:30:02 DB[436]: [INFO] User login successful
+Apr 29 08:30:09 API[195]: [ERROR] Failed to write to buffer
+Apr 29 08:30:16 KERNEL[132]: [INFO] User login successful
+Apr 29 08:30:23 DISK[291]: [INFO] User login successful
+Apr 29 08:30:30 KERNEL[390]: [INFO] Database query optimized
+Apr 29 08:30:37 KERNEL[565]: [INFO] User login successful
+Apr 29 08:30:44 AUTH[275]: [INFO] User login successful
+Apr 29 08:30:51 SYSTEMD[500]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:30:58 KERNEL[649]: [ERROR] Connection refused by peer
+Apr 29 08:31:05 DB[498]: [INFO] User login successful
+Apr 29 08:31:12 KERNEL[417]: [INFO] User login successful
+Apr 29 08:31:19 DB[262]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:31:26 API[701]: [INFO] Database query optimized
+Apr 29 08:31:33 KERNEL[382]: [INFO] Database query optimized
+Apr 29 08:31:40 KERNEL[556]: [INFO] User login successful
+Apr 29 08:31:47 AUTH[638]: [ERROR] Connection refused by peer
+Apr 29 08:31:54 SYSTEMD[571]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:32:01 DB[394]: [INFO] User login successful
+Apr 29 08:32:08 DISK[455]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:32:15 DISK[500]: [ERROR] Failed to write to buffer
+Apr 29 08:32:22 API[525]: [ERROR] Connection refused by peer
+Apr 29 08:32:29 KERNEL[568]: [INFO] Database query optimized
+Apr 29 08:32:36 DB[815]: [ERROR] Connection refused by peer
+Apr 29 08:32:43 API[345]: [INFO] User login successful
+Apr 29 08:32:50 KERNEL[782]: [INFO] Database query optimized
+Apr 29 08:32:57 AUTH[605]: [INFO] User login successful
+Apr 29 08:33:04 DB[477]: [WARN] Disk usage exceeding 80%
+Apr 29 08:33:11 AUTH[519]: [INFO] Database query optimized
+Apr 29 08:33:18 DB[618]: [INFO] User login successful
+Apr 29 08:33:25 AUTH[754]: [INFO] User login successful
+Apr 29 08:33:32 DISK[490]: [INFO] Database query optimized
+Apr 29 08:33:39 SYSTEMD[506]: [INFO] User login successful
+Apr 29 08:33:46 AUTH[826]: [INFO] User login successful
+Apr 29 08:33:53 KERNEL[596]: [INFO] Database query optimized
+Apr 29 08:34:00 DB[830]: [INFO] User login successful
+Apr 29 08:34:07 DB[961]: [INFO] Database query optimized
+Apr 29 08:34:14 KERNEL[721]: [INFO] User login successful
+Apr 29 08:34:21 AUTH[647]: [INFO] User login successful
+Apr 29 08:34:28 DISK[787]: [INFO] User login successful
+Apr 29 08:34:35 AUTH[551]: [INFO] User login successful
+Apr 29 08:34:42 SYSTEMD[791]: [INFO] User login successful
+Apr 29 08:34:49 API[956]: [INFO] User login successful
+Apr 29 08:34:56 DISK[499]: [WARN] Disk usage exceeding 80%
+Apr 29 08:35:03 DISK[712]: [INFO] User login successful
+Apr 29 08:35:10 AUTH[885]: [INFO] Database query optimized
+Apr 29 08:35:17 KERNEL[344]: [ERROR] Failed to write to buffer
+Apr 29 08:35:24 KERNEL[128]: [INFO] Database query optimized
+Apr 29 08:35:31 AUTH[796]: [INFO] User login successful
+Apr 29 08:35:38 DISK[916]: [INFO] User login successful
+Apr 29 08:35:45 DISK[145]: [INFO] User login successful
+Apr 29 08:35:52 DB[430]: [INFO] Database query optimized
+Apr 29 08:35:59 API[654]: [INFO] User login successful
+Apr 29 08:36:06 DB[337]: [WARN] Disk usage exceeding 80%
+Apr 29 08:36:13 KERNEL[277]: [INFO] Database query optimized
+Apr 29 08:36:20 AUTH[112]: [INFO] Database query optimized
+Apr 29 08:36:27 DB[167]: [INFO] User login successful
+Apr 29 08:36:34 DISK[144]: [ERROR] Failed to write to buffer
+Apr 29 08:36:41 AUTH[408]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:36:48 API[829]: [INFO] User login successful
+Apr 29 08:36:55 API[357]: [INFO] User login successful
+Apr 29 08:37:02 AUTH[794]: [INFO] Database query optimized
+Apr 29 08:37:09 DISK[750]: [INFO] User login successful
+Apr 29 08:37:16 DISK[169]: [INFO] Database query optimized
+Apr 29 08:37:23 SYSTEMD[491]: [INFO] Database query optimized
+Apr 29 08:37:30 API[615]: [INFO] User login successful
+Apr 29 08:37:37 API[338]: [INFO] User login successful
+Apr 29 08:37:44 AUTH[416]: [INFO] User login successful
+Apr 29 08:37:51 KERNEL[734]: [INFO] User login successful
+Apr 29 08:37:58 AUTH[610]: [INFO] Database query optimized
+Apr 29 08:38:05 SYSTEMD[309]: [INFO] Database query optimized
+Apr 29 08:38:12 DISK[856]: [INFO] Database query optimized
+Apr 29 08:38:19 SYSTEMD[759]: [INFO] Database query optimized
+Apr 29 08:38:26 AUTH[763]: [INFO] Database query optimized
+Apr 29 08:38:33 SYSTEMD[967]: [INFO] User login successful
+Apr 29 08:38:40 DISK[310]: [INFO] User login successful
+Apr 29 08:38:47 API[920]: [INFO] User login successful
+Apr 29 08:38:54 DISK[722]: [INFO] User login successful
+Apr 29 08:39:01 DB[552]: [INFO] User login successful
+Apr 29 08:39:08 DISK[171]: [INFO] Database query optimized
+Apr 29 08:39:15 KERNEL[309]: [INFO] User login successful
+Apr 29 08:39:22 KERNEL[341]: [INFO] User login successful
+Apr 29 08:39:29 API[418]: [INFO] Database query optimized
+Apr 29 08:39:36 KERNEL[534]: [INFO] User login successful
+Apr 29 08:39:43 KERNEL[392]: [INFO] Database query optimized
+Apr 29 08:39:50 API[378]: [INFO] User login successful
+Apr 29 08:39:57 DB[507]: [INFO] Database query optimized
+Apr 29 08:40:04 DB[532]: [INFO] Database query optimized
+Apr 29 08:40:11 API[878]: [INFO] Database query optimized
+Apr 29 08:40:18 KERNEL[120]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:40:25 DB[877]: [INFO] User login successful
+Apr 29 08:40:32 SYSTEMD[666]: [INFO] User login successful
+Apr 29 08:40:39 DISK[574]: [INFO] Database query optimized
+Apr 29 08:40:46 SYSTEMD[675]: [INFO] Database query optimized
+Apr 29 08:40:53 API[239]: [INFO] Database query optimized
+Apr 29 08:41:00 DISK[294]: [INFO] User login successful
+Apr 29 08:41:07 AUTH[603]: [INFO] Database query optimized
+Apr 29 08:41:14 DB[860]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:41:21 SYSTEMD[756]: [INFO] Database query optimized
+Apr 29 08:41:28 API[227]: [INFO] User login successful
+Apr 29 08:41:35 DB[298]: [ERROR] Connection refused by peer
+Apr 29 08:41:42 DB[621]: [ERROR] Failed to write to buffer
+Apr 29 08:41:49 DISK[813]: [INFO] Database query optimized
+Apr 29 08:41:56 AUTH[853]: [INFO] Database query optimized
+Apr 29 08:42:03 KERNEL[932]: [INFO] User login successful
+Apr 29 08:42:10 SYSTEMD[814]: [INFO] User login successful
+Apr 29 08:42:17 DISK[719]: [INFO] Database query optimized
+Apr 29 08:42:24 DB[360]: [ERROR] Connection refused by peer
+Apr 29 08:42:31 KERNEL[112]: [INFO] User login successful
+Apr 29 08:42:38 AUTH[507]: [INFO] Database query optimized
+Apr 29 08:42:45 DISK[630]: [INFO] User login successful
+Apr 29 08:42:52 KERNEL[949]: [ERROR] Connection refused by peer
+Apr 29 08:42:59 DB[612]: [INFO] Database query optimized
+Apr 29 08:43:06 API[700]: [INFO] Database query optimized
+Apr 29 08:43:13 SYSTEMD[211]: [INFO] User login successful
+Apr 29 08:43:20 DISK[933]: [INFO] Database query optimized
+Apr 29 08:43:27 KERNEL[866]: [INFO] User login successful
+Apr 29 08:43:34 DB[272]: [INFO] User login successful
+Apr 29 08:43:41 DB[892]: [INFO] User login successful
+Apr 29 08:43:48 DISK[770]: [INFO] Database query optimized
+Apr 29 08:43:55 SYSTEMD[280]: [INFO] User login successful
+Apr 29 08:44:02 SYSTEMD[302]: [INFO] User login successful
+Apr 29 08:44:09 DB[561]: [INFO] User login successful
+Apr 29 08:44:16 API[305]: [ERROR] Connection refused by peer
+Apr 29 08:44:23 AUTH[365]: [INFO] User login successful
+Apr 29 08:44:30 DB[989]: [INFO] User login successful
+Apr 29 08:44:37 DISK[187]: [INFO] Database query optimized
+Apr 29 08:44:44 DB[450]: [INFO] User login successful
+Apr 29 08:44:51 AUTH[596]: [INFO] Database query optimized
+Apr 29 08:44:58 DISK[162]: [INFO] User login successful
+Apr 29 08:45:05 SYSTEMD[781]: [INFO] User login successful
+Apr 29 08:45:12 API[199]: [INFO] User login successful
+Apr 29 08:45:19 KERNEL[484]: [INFO] User login successful
+Apr 29 08:45:26 API[597]: [INFO] Database query optimized
+Apr 29 08:45:33 DB[444]: [INFO] Database query optimized
+Apr 29 08:45:40 SYSTEMD[422]: [INFO] Database query optimized
+Apr 29 08:45:47 KERNEL[487]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:45:54 API[994]: [INFO] Database query optimized
+Apr 29 08:46:01 SYSTEMD[567]: [WARN] Disk usage exceeding 80%
+Apr 29 08:46:08 DISK[126]: [INFO] User login successful
+Apr 29 08:46:15 API[816]: [INFO] Database query optimized
+Apr 29 08:46:22 KERNEL[627]: [INFO] Database query optimized
+Apr 29 08:46:29 DB[753]: [INFO] User login successful
+Apr 29 08:46:36 SYSTEMD[994]: [INFO] Database query optimized
+Apr 29 08:46:43 AUTH[794]: [ERROR] Failed to write to buffer
+Apr 29 08:46:50 DB[509]: [INFO] Database query optimized
+Apr 29 08:46:57 DISK[456]: [INFO] User login successful
+Apr 29 08:47:04 DB[774]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:47:11 DISK[400]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:47:18 API[990]: [INFO] User login successful
+Apr 29 08:47:25 API[230]: [WARN] Disk usage exceeding 80%
+Apr 29 08:47:32 DB[952]: [INFO] Database query optimized
+Apr 29 08:47:39 DISK[272]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:47:46 DB[778]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:47:53 API[274]: [INFO] User login successful
+Apr 29 08:48:00 DISK[545]: [INFO] User login successful
+Apr 29 08:48:07 DISK[492]: [INFO] Database query optimized
+Apr 29 08:48:14 SYSTEMD[781]: [INFO] Database query optimized
+Apr 29 08:48:21 DB[781]: [WARN] Disk usage exceeding 80%
+Apr 29 08:48:28 KERNEL[192]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:48:35 DISK[689]: [INFO] User login successful
+Apr 29 08:48:42 API[486]: [INFO] Database query optimized
+Apr 29 08:48:49 DISK[769]: [INFO] Database query optimized
+Apr 29 08:48:56 DISK[927]: [INFO] Database query optimized
+Apr 29 08:49:03 KERNEL[397]: [INFO] User login successful
+Apr 29 08:49:10 AUTH[858]: [INFO] Database query optimized
+Apr 29 08:49:17 API[686]: [WARN] Disk usage exceeding 80%
+Apr 29 08:49:24 SYSTEMD[489]: [INFO] Database query optimized
+Apr 29 08:49:31 API[163]: [INFO] Database query optimized
+Apr 29 08:49:38 API[533]: [INFO] Database query optimized
+Apr 29 08:49:45 SYSTEMD[632]: [INFO] User login successful
+Apr 29 08:49:52 DISK[209]: [INFO] User login successful
+Apr 29 08:49:59 DB[423]: [INFO] Database query optimized
+Apr 29 08:50:06 KERNEL[957]: [ERROR] Failed to write to buffer
+Apr 29 08:50:13 KERNEL[250]: [INFO] Database query optimized
+Apr 29 08:50:20 API[713]: [INFO] User login successful
+Apr 29 08:50:27 SYSTEMD[380]: [INFO] User login successful
+Apr 29 08:50:34 DISK[606]: [INFO] User login successful
+Apr 29 08:50:41 SYSTEMD[160]: [INFO] Database query optimized
+Apr 29 08:50:48 SYSTEMD[968]: [INFO] User login successful
+Apr 29 08:50:55 DISK[817]: [ERROR] Connection refused by peer
+Apr 29 08:51:02 DISK[977]: [INFO] User login successful
+Apr 29 08:51:09 DB[934]: [INFO] Database query optimized
+Apr 29 08:51:16 DISK[122]: [ERROR] Connection refused by peer
+Apr 29 08:51:23 API[794]: [INFO] Database query optimized
+Apr 29 08:51:30 DB[500]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:51:37 AUTH[389]: [INFO] Database query optimized
+Apr 29 08:51:44 DISK[199]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:51:51 KERNEL[970]: [INFO] User login successful
+Apr 29 08:51:58 DISK[691]: [INFO] User login successful
+Apr 29 08:52:05 KERNEL[398]: [INFO] Database query optimized
+Apr 29 08:52:12 KERNEL[852]: [INFO] User login successful
+Apr 29 08:52:19 DISK[794]: [INFO] User login successful
+Apr 29 08:52:26 KERNEL[795]: [INFO] Database query optimized
+Apr 29 08:52:33 KERNEL[464]: [WARN] Disk usage exceeding 80%
+Apr 29 08:52:40 DB[220]: [INFO] User login successful
+Apr 29 08:52:47 API[252]: [INFO] Database query optimized
+Apr 29 08:52:54 DISK[134]: [INFO] User login successful
+Apr 29 08:53:01 AUTH[409]: [INFO] Database query optimized
+Apr 29 08:53:08 DISK[768]: [INFO] User login successful
+Apr 29 08:53:15 DISK[896]: [INFO] User login successful
+Apr 29 08:53:22 DB[381]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:53:29 DISK[111]: [INFO] Database query optimized
+Apr 29 08:53:36 AUTH[600]: [INFO] User login successful
+Apr 29 08:53:43 DISK[123]: [INFO] User login successful
+Apr 29 08:53:50 API[380]: [INFO] Database query optimized
+Apr 29 08:53:57 DISK[493]: [INFO] User login successful
+Apr 29 08:54:04 DB[405]: [CRITICAL] Out of memory: Kill process
+Apr 29 08:54:11 API[165]: [INFO] Database query optimized
+Apr 29 08:54:18 DISK[515]: [ERROR] Connection refused by peer
+Apr 29 08:54:25 DISK[165]: [INFO] Database query optimized
+Apr 29 08:54:32 API[871]: [WARN] Disk usage exceeding 80%
+Apr 29 08:54:39 KERNEL[285]: [WARN] Disk usage exceeding 80%
+Apr 29 08:54:46 API[668]: [INFO] User login successful
+Apr 29 08:54:53 DB[140]: [WARN] Disk usage exceeding 80%
+Apr 29 08:55:00 KERNEL[189]: [INFO] User login successful
+Apr 29 08:55:07 API[186]: [INFO] User login successful
+Apr 29 08:55:14 AUTH[657]: [INFO] Database query optimized
+Apr 29 08:55:21 KERNEL[354]: [INFO] User login successful
+Apr 29 08:55:28 SYSTEMD[774]: [INFO] Database query optimized
+Apr 29 08:55:35 API[811]: [INFO] Database query optimized
+Apr 29 08:55:42 SYSTEMD[720]: [INFO] Database query optimized
+Apr 29 08:55:49 API[778]: [INFO] User login successful
+Apr 29 08:55:56 AUTH[245]: [INFO] User login successful
+Apr 29 08:56:03 SYSTEMD[237]: [ERROR] Connection refused by peer
+Apr 29 08:56:10 API[384]: [INFO] Database query optimized
+Apr 29 08:56:17 KERNEL[176]: [INFO] Database query optimized
+Apr 29 08:56:24 API[765]: [INFO] Database query optimized
+Apr 29 08:56:31 KERNEL[360]: [INFO] User login successful
+Apr 29 08:56:38 DISK[648]: [INFO] User login successful
+Apr 29 08:56:45 KERNEL[748]: [INFO] Database query optimized
+Apr 29 08:56:52 DISK[677]: [INFO] Database query optimized
+Apr 29 08:56:59 DISK[529]: [INFO] User login successful
+Apr 29 08:57:06 KERNEL[488]: [INFO] Database query optimized
+Apr 29 08:57:13 AUTH[179]: [ERROR] Connection refused by peer
+Apr 29 08:57:20 SYSTEMD[800]: [INFO] User login successful
+Apr 29 08:57:27 API[755]: [INFO] Database query optimized
+Apr 29 08:57:34 AUTH[896]: [INFO] Database query optimized
+Apr 29 08:57:41 SYSTEMD[380]: [INFO] User login successful
+Apr 29 08:57:48 AUTH[487]: [INFO] User login successful
+Apr 29 08:57:55 AUTH[279]: [INFO] User login successful
+Apr 29 08:58:02 API[702]: [INFO] Database query optimized
+Apr 29 08:58:09 DB[817]: [INFO] Database query optimized
+Apr 29 08:58:16 API[722]: [ERROR] Failed to write to buffer
+Apr 29 08:58:23 AUTH[425]: [ERROR] Connection refused by peer
+Apr 29 08:58:30 DB[588]: [INFO] Database query optimized
+Apr 29 08:58:37 API[803]: [INFO] User login successful
+Apr 29 08:58:44 API[246]: [INFO] User login successful
+Apr 29 08:58:51 DB[154]: [INFO] Database query optimized
+Apr 29 08:58:58 DISK[824]: [INFO] Database query optimized
+Apr 29 08:59:05 KERNEL[823]: [INFO] Database query optimized
+Apr 29 08:59:12 DB[917]: [INFO] Database query optimized
+Apr 29 08:59:19 DB[538]: [INFO] Database query optimized
+Apr 29 08:59:26 API[412]: [ERROR] Connection refused by peer
+Apr 29 08:59:33 DISK[516]: [ERROR] Failed to write to buffer
+Apr 29 08:59:40 SYSTEMD[178]: [WARN] Disk usage exceeding 80%
+Apr 29 08:59:47 DISK[269]: [INFO] User login successful
+Apr 29 08:59:54 API[667]: [INFO] Database query optimized
+Apr 29 09:00:01 DB[534]: [WARN] Disk usage exceeding 80%
+Apr 29 09:00:08 DISK[591]: [INFO] User login successful
+Apr 29 09:00:15 DB[515]: [INFO] User login successful
+Apr 29 09:00:22 AUTH[831]: [INFO] User login successful
+Apr 29 09:00:29 DB[350]: [INFO] Database query optimized
+Apr 29 09:00:36 DISK[721]: [INFO] User login successful
+Apr 29 09:00:43 DB[279]: [ERROR] Connection refused by peer
+Apr 29 09:00:50 AUTH[626]: [INFO] User login successful
+Apr 29 09:00:57 SYSTEMD[488]: [ERROR] Failed to write to buffer
+Apr 29 09:01:04 KERNEL[795]: [ERROR] Failed to write to buffer
+Apr 29 09:01:11 KERNEL[406]: [ERROR] Failed to write to buffer
+Apr 29 09:01:18 DB[855]: [ERROR] Connection refused by peer
+Apr 29 09:01:25 DISK[758]: [ERROR] Failed to write to buffer
+Apr 29 09:01:32 API[732]: [ERROR] Failed to write to buffer
+Apr 29 09:01:39 DB[571]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:01:46 SYSTEMD[458]: [ERROR] Connection refused by peer
+Apr 29 09:01:53 DISK[203]: [ERROR] Connection refused by peer
+Apr 29 09:02:00 DB[626]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:02:07 KERNEL[259]: [ERROR] Connection refused by peer
+Apr 29 09:02:14 DISK[483]: [ERROR] Failed to write to buffer
+Apr 29 09:02:21 SYSTEMD[931]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:02:28 SYSTEMD[959]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:02:35 DB[544]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:02:42 AUTH[294]: [ERROR] Connection refused by peer
+Apr 29 09:02:49 SYSTEMD[861]: [ERROR] Failed to write to buffer
+Apr 29 09:02:56 SYSTEMD[303]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:03:03 DB[531]: [ERROR] Connection refused by peer
+Apr 29 09:03:10 DB[869]: [ERROR] Failed to write to buffer
+Apr 29 09:03:17 DB[212]: [ERROR] Connection refused by peer
+Apr 29 09:03:24 AUTH[452]: [ERROR] Connection refused by peer
+Apr 29 09:03:31 API[794]: [ERROR] Connection refused by peer
+Apr 29 09:03:38 SYSTEMD[591]: [ERROR] Failed to write to buffer
+Apr 29 09:03:45 SYSTEMD[353]: [ERROR] Failed to write to buffer
+Apr 29 09:03:52 API[387]: [ERROR] Connection refused by peer
+Apr 29 09:03:59 AUTH[940]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:04:06 DB[847]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:04:13 API[744]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:04:20 DISK[235]: [INFO] User login successful
+Apr 29 09:04:27 DB[249]: [INFO] User login successful
+Apr 29 09:04:34 DB[193]: [INFO] User login successful
+Apr 29 09:04:41 AUTH[816]: [INFO] Database query optimized
+Apr 29 09:04:48 DISK[444]: [ERROR] Connection refused by peer
+Apr 29 09:04:55 DB[759]: [INFO] Database query optimized
+Apr 29 09:05:02 AUTH[472]: [INFO] Database query optimized
+Apr 29 09:05:09 SYSTEMD[352]: [CRITICAL] Out of memory: Kill process
+Apr 29 09:05:16 SYSTEMD[141]: [ERROR] Connection refused by peer
+Apr 29 09:05:23 AUTH[317]: [INFO] Database query optimized
+Apr 29 09:05:30 SYSTEMD[541]: [INFO] User login successful
+Apr 29 09:05:37 KERNEL[472]: [INFO] Database query optimized
+Apr 29 09:05:44 SYSTEMD[785]: [INFO] User login successful
+Apr 29 09:05:51 AUTH[439]: [INFO] User login successful
+Apr 29 09:05:58 SYSTEMD[860]: [INFO] Database query optimized
+Apr 29 09:06:05 API[343]: [INFO] Database query optimized
+Apr 29 09:06:12 DISK[189]: [INFO] Database query optimized
+Apr 29 09:06:19 AUTH[142]: [INFO] User login successful
+Apr 29 09:06:26 API[297]: [ERROR] Connection refused by peer
+Apr 29 09:06:33 DISK[176]: [INFO] User login successful

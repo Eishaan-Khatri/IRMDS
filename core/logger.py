@@ -93,12 +93,29 @@ def setup_logging(*, json_output: bool = False, log_level: str = "INFO") -> None
         ],
     )
 
+    # ── Console Handler (Human-readable or JSON) ────────────────
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(formatter)
+
+    # ── File Handler (Always JSON for production/audit) ─────────
+    from pathlib import Path
+
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    file_handler = logging.FileHandler(log_dir / "irmds.log")
+    file_handler.setFormatter(
+        structlog.stdlib.ProcessorFormatter(
+            processors=[
+                structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                structlog.processors.JSONRenderer(),
+            ],
+        )
+    )
 
     root_logger = logging.getLogger()
     root_logger.handlers.clear()
     root_logger.addHandler(handler)
+    root_logger.addHandler(file_handler)
     root_logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
 
     # Quiet noisy third-party loggers
