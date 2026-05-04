@@ -49,14 +49,14 @@ def generate_stock_data(path: Path, rows: int = 2000) -> None:
             noise = p * 0.002
             o = p + random.uniform(-noise, noise)
             h = max(o, p) + random.uniform(0, noise)
-            l = min(o, p) - random.uniform(0, noise)
+            low = min(o, p) - random.uniform(0, noise)
             c = p
             # Volume spike on anomalies
             vol = random.randint(1000, 5000)
             if 500 <= i <= 510 or 1700 <= i <= 1740:
                 vol *= 5
 
-            writer.writerow([ts, round(o, 2), round(h, 2), round(l, 2), round(c, 2), vol])
+            writer.writerow([ts, round(o, 2), round(h, 2), round(low, 2), round(c, 2), vol])
 
 
 def generate_syslog_data(path: Path, rows: int = 500) -> None:
@@ -83,7 +83,7 @@ def generate_syslog_data(path: Path, rows: int = 500) -> None:
                 sev, msg = events[random.randint(0, 1)]
             else:
                 sev, msg = random.choice(events[2:])
-            
+
             # Inject a burst of errors near the end
             if 450 < i < 480:
                 sev, msg = random.choice(events[3:])

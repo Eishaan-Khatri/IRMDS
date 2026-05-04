@@ -47,9 +47,9 @@ class FinanceAnomalyDetector:
 
         if not is_anomaly:
             baseline_volatility = [v[1] for v in self._history[-50:]]
-            dev = (features["volatility"] - np.mean(baseline_volatility)) / (
+            dev = float((features["volatility"] - np.mean(baseline_volatility)) / (
                 np.std(baseline_volatility) + 1e-6
-            )
+            ))
             self.cusum_pos = max(0, self.cusum_pos + dev - self.cusum_drift)
             self.cusum_neg = max(0, self.cusum_neg - dev - self.cusum_drift)
 

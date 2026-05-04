@@ -1,6 +1,4 @@
-# ═══════════════════════════════════════════════
 # Python
-# ═══════════════════════════════════════════════
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,58 +8,45 @@ dist/
 build/
 *.egg
 
-# ═══════════════════════════════════════════════
-# Environment & Secrets
-# ═══════════════════════════════════════════════
+# Environment and secrets
+.venv/
+.deps/
+.tmp/
+.pytest_tmp/
 .env
 .env.local
 .env.production
 
-# ═══════════════════════════════════════════════
-# IDE
-# ═══════════════════════════════════════════════
+# IDE and local workspace files
 .vscode/
 .idea/
+*.code-workspace
 *.swp
 *.swo
 *~
 
-# ═══════════════════════════════════════════════
-# Models & Data (large binary files)
-# ═══════════════════════════════════════════════
+# Models and generated model artifacts
 models/*.pt
 models/*.onnx
 models/*.pkl
 !models/README.md
 !models/.gitkeep
 
-# ═══════════════════════════════════════════════
 # Runtime artifacts
-# ═══════════════════════════════════════════════
-logs/*.log
-logs/*.json
+logs/
 data/*.db
 data/*.pcap
 *.mp4
 *.avi
 
-# ═══════════════════════════════════════════════
-# OS
-# ═══════════════════════════════════════════════
+# OS files
 .DS_Store
 Thumbs.db
 
-# ═══════════════════════════════════════════════
-# Testing & Coverage
-# ═══════════════════════════════════════════════
+# Testing and coverage
 .coverage
 htmlcov/
 coverage.xml
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
-# Runtime images / generated dashboard artifacts
-logs/*.png
-logs/*.jpg
-logs/*.jpeg

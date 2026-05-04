@@ -7,6 +7,7 @@ from __future__ import annotations
 import csv
 import time
 from pathlib import Path
+from uuid import uuid4
 
 from core.base_module import ModuleStatus
 from core.config import IRMDSConfig
@@ -39,9 +40,15 @@ def _write_stock_fixture(path: Path) -> None:
             writer.writerow([f"t{idx}", close, close, close, close, volume])
 
 
-def test_finance_pipeline_emits_metrics_and_anomaly(tmp_path):
+def _test_workdir(name: str) -> Path:
+    workdir = Path(".tmp") / "phase5_tests" / f"{name}_{uuid4().hex[:8]}"
+    workdir.mkdir(parents=True, exist_ok=True)
+    return workdir
+
+
+def test_finance_pipeline_emits_metrics_and_anomaly():
     """FinancePipeline should run through replay data and emit FIN events."""
-    stock_path = tmp_path / "sample_stock.csv"
+    stock_path = _test_workdir("finance") / "sample_stock.csv"
     _write_stock_fixture(stock_path)
 
     event_bus = EventBus(max_history=200)
@@ -73,7 +80,7 @@ def test_finance_pipeline_emits_metrics_and_anomaly(tmp_path):
     )
 
 
-def test_infrastructure_pipeline_emits_threshold_and_log_events(monkeypatch, tmp_path):
+def test_infrastructure_pipeline_emits_threshold_and_log_events(monkeypatch):
     """InfrastructurePipeline should emit mocked CPU/RAM and log anomaly events."""
 
     class FakeMetric:
@@ -105,7 +112,7 @@ def test_infrastructure_pipeline_emits_threshold_and_log_events(monkeypatch, tmp
         def pids():
             return list(range(42))
 
-    log_path = tmp_path / "sample_syslog.log"
+    log_path = _test_workdir("infra") / "sample_syslog.log"
     log_path.write_text("May 02 10:00:00 API[123]: [ERROR] simulated failure\n")
 
     monkeypatch.setattr(system_collector, "psutil", FakePsutil)

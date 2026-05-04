@@ -14,8 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes import alerts, commands, export, metrics, modules, sessions, system, ws
 from core.actuation_gateway import ActuationGateway
 from core.alert_manager import AlertManager
-from core.config import get_config
 from core.command_bus import CommandBus
+from core.config import get_config
 from core.database import init_db
 from core.event_bus import EventBus
 from core.logger import get_logger

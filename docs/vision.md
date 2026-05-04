@@ -1,30 +1,68 @@
-# IRMDS — The Sovereign Vision
+# IRMDS Vision
 
-IRMDS is envisioned not just as a software application, but as a **Physical Space Operating System (PSOS)**. This document outlines the long-term roadmap for the 100 modules that will turn any physical environment into a self-protecting, autonomous "Sense Node."
+IRMDS is a personal open-source systems project exploring a simple question:
 
-## The "Android for Factories" Strategy
-The goal is to provide the **Micro-Kernel** (Core) and the **API** (BaseModule SDK) so that developers can build specialized "Apps" (Modules) for any domain.
+> What would a small, dependable runtime for intelligent physical-space
+> monitoring look like?
 
----
+The current answer is intentionally modest: a kernel, a module contract, an
+event bus, alert handling, metrics, persistence, an API, and reference modules
+for four very different domains.
 
-### Phase 1: The Sovereign Kernel (The "Brain")
-1.  **Plugin Discovery Engine:** Automatic dynamic folder scanning. [DONE]
-2.  **Internal EventBus:** Centralized Pub/Sub routing. [DONE]
-3.  **BaseModule Contract:** The strict interface for all plugins. [DONE]
-4.  **Metrics Collector:** Telemetry sink for real-time stats. [DONE]
-5.  **Alert Manager:** Logic for deduplication and severity. [DONE]
-6.  **Session Manager:** Tracking system uptime and sessions. [DONE]
-7.  **Database ORM Layer:** Abstraction for SQL persistence. [DONE]
-8.  **Config/Secret Management:** Secured environment handling. [DONE]
-9.  **Logger:** Structured JSON logging for ELK compatibility. [DONE]
-10. **Management API:** The foundation for external control. [DONE]
+## Present-Day Positioning
 
-### Phase 2: Cybersecurity & Digital Integrity (The "Shield")
-11. **Network Traffic Generator:** Controlled synthetic simulations. [DONE]
-12. **Bounded Feature Extractor:** O(1) memory packet analysis. [DONE]
-13. **Isolation Forest Engine:** Unsupervised ML anomaly detection. [DONE]
-14. **EMA Z-Score Filter:** Volatility detection for baseline shifts. [DONE]
-15. **PLC Logic Auditor:** Verifying machine code hasn't been modified.
-... (Rest of the 100 modules) ...
+Use this phrase for the current repo:
 
-[Refer to implementation_plan.md and task.md for current active engineering]
+> open-source runtime for intelligent physical-space monitoring
+
+Avoid claiming real autonomous control or industrial safety readiness. v0 is a
+monitoring and simulation system.
+
+## Long-Term North Star
+
+The long-term direction is a "physical-space runtime":
+
+- a small core that manages modules, events, metrics, alerts, and sessions
+- a stable SDK that makes new modules easy to write
+- reference modules for vision, network, finance, and infrastructure
+- safe dry-run command simulation before any real actuation
+- future policy, audit, authentication, and simulation layers
+
+This is adjacent to the "Linux for physical spaces" idea, but the project should
+earn that language over time through reliability, contributor experience, and
+real deployments.
+
+## Safety Principle
+
+Software should never be the only safety layer for physical systems.
+
+Real control belongs behind:
+
+- explicit authentication and authorization
+- signed command records
+- policy checks
+- simulation or dry-run validation
+- audit logs
+- hardware interlocks and certified safety mechanisms
+
+v0 deliberately stops at simulated command execution.
+
+## Growth Strategy
+
+Do not build 100 modules first. Build the runtime so well that modules become
+easy.
+
+Recommended path:
+
+1. make v0 reliable and easy to run
+2. document the module contract clearly
+3. ship Docker and CI
+4. add a module starter template
+5. improve dashboard and operator workflows
+6. then expand into higher-value modules
+
+The value is the kernel pattern:
+
+```text
+Module -> EventBus -> AlertManager/Metrics -> API -> Dashboard
+```

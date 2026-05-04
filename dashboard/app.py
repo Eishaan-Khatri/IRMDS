@@ -145,13 +145,14 @@ with ctrl_col2:
                         with c_b:
                             st.markdown(f"`{state_label}`")
                         with c_c:
-                            if cmd["state"] == "pending":
-                                if st.button("AUTHORIZE", key=f"auth_{cmd['id']}"):
-                                    httpx.post(
-                                        f"{API_URL}/commands/{cmd['id']}/approve",
-                                        timeout=5,
-                                    )
-                                    st.rerun()
+                            if cmd["state"] == "pending" and st.button(
+                                "AUTHORIZE", key=f"auth_{cmd['id']}"
+                            ):
+                                httpx.post(
+                                    f"{API_URL}/commands/{cmd['id']}/approve",
+                                    timeout=5,
+                                )
+                                st.rerun()
         else:
             st.error("LEDGER OFFLINE")
     except Exception as exc:
