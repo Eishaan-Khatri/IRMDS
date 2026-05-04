@@ -60,9 +60,11 @@ def test_list_modules(client: TestClient):
     data = response.json()
     assert isinstance(data, list)
 
-    # We expect our visual module to be discovered
     module_ids = [m["id"] for m in data]
     assert "visual" in module_ids
+    assert "network" in module_ids
+    assert "timeseries" in module_ids
+    assert "infrastructure" in module_ids
 
 
 @patch("modules.visual.pipeline.VisualPipeline.start")
@@ -173,3 +175,45 @@ def test_websocket_event_streaming(client: TestClient, app):
         assert data["module"] == "network"
         assert data["type"] == "PORT_SCAN"
         assert data["severity"] == "CRITICAL"
+
+
+def test_command_dry_run_lifecycle(client: TestClient, app):
+    """Commands should be dry-run only and completed by the simulated gateway."""
+    response = client.post(
+        "/commands",
+        json={
+            "action": "SET_MAINTENANCE_MODE",
+            "target_device": "SIM_DEVICE_01",
+            "payload": {"reason": "integration test"},
+            "dry_run": False,
+        },
+    )
+    assert response.status_code == 200
+    command = response.json()["command"]
+    assert command["dry_run"] is True
+    assert command["state"] == "pending"
+
+    command_id = command["id"]
+    approve_response = client.post(f"/commands/{command_id}/approve")
+    assert approve_response.status_code == 200
+    assert approve_response.json()["command"]["state"] == "approved"
+
+    completed = None
+    for _ in range(30):
+        status_response = client.get(f"/commands/{command_id}")
+        assert status_response.status_code == 200
+        completed = status_response.json()["command"]
+        if completed["state"] == "completed":
+            break
+        time.sleep(0.1)
+
+    assert completed is not None
+    assert completed["state"] == "completed"
+    assert completed["dry_run"] is True
+
+    recent_commands = client.get("/commands?limit=5")
+    assert recent_commands.status_code == 200
+    assert any(cmd["id"] == command_id for cmd in recent_commands.json()["commands"])
+
+    events = app.state.event_bus.get_history(limit=20, module="actuation_gateway")
+    assert any(event.type == "COMMAND_EXECUTED" for event in events)

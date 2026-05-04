@@ -1,399 +1,366 @@
-# IRMDS - Intelligent Real-Time Monitoring & Decision System
+<div align="center">
+
+# IRMDS
+
+**Intelligent Real-Time Monitoring & Decision System**
+
+An open-source runtime for intelligent physical-space monitoring: one kernel,
+four anomaly-detection modules, one event bus, one API, and a live dashboard.
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
-![YOLOv8](https://img.shields.io/badge/YOLOv8-Visual_AI-111111)
-![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-REST%20%2B%20WebSocket-009688?logo=fastapi&logoColor=white)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-visual%20AI-111111)
+![Streamlit](https://img.shields.io/badge/Streamlit-dashboard-FF4B4B?logo=streamlit&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-persistence-003B57?logo=sqlite&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-IRMDS is a modular real-time anomaly detection platform for visual surveillance,
-network traffic, financial time-series, and infrastructure telemetry. It is built
-as a production-style AI systems project: domain modules publish structured
-events into a shared event bus, alerts are deduplicated and escalated, metrics
-stream to a FastAPI backend, and operators monitor the system through a live
-dashboard.
+</div>
 
-The project is designed to demonstrate end-to-end engineering range: computer
-vision, streaming feature extraction, anomaly detection, backend APIs,
-WebSockets, observability, testing, containerization, and deployable project
-structure.
+## What This Is
 
-## Project Status
+IRMDS is a modular monitoring platform for real-time anomaly detection across
+very different signal types:
 
-This repository is in active development toward the complete v1 architecture.
-The visual module and core scaffolding are in place; the next stabilization
-milestone is making the current API startup and network module contract fully
-green under tests.
+- visual surveillance
+- synthetic network traffic
+- financial time-series replay
+- host infrastructure telemetry
 
-| Area | Status | Notes |
+Each domain module runs behind the same `BaseModule` contract, publishes
+structured events to the same `EventBus`, and exposes metrics through the same
+FastAPI backend. The current v0 focus is monitoring, alerting, observability,
+and safe dry-run command simulation.
+
+This repo should be read as the seed of a larger platform, not as a finished
+industrial control system. Real hardware actuation is intentionally out of
+scope for v0.
+
+## Current Status
+
+| Area | v0 State | Notes |
 |:--|:--|:--|
-| Core framework | Implemented | Config, event bus, metrics, plugin registry, sessions, exceptions |
-| Visual module | Implemented | YOLO wrapper, tracker, zones, speed, heatmap, pipeline tests |
-| FastAPI backend | Partially implemented | Routes exist; startup stabilization is next |
-| Streamlit dashboard | Early implementation | Overview and visual page exist; needs polish and API config cleanup |
-| Network module | In progress | Generator, extractor, detector exist; pipeline needs BaseModule alignment |
-| Finance module | Planned | Time-series data source, feature extractor, detector, pipeline |
-| Infrastructure module | Planned | psutil collector, log analyzer, anomaly detector, pipeline |
-| Notifications and CLI | Planned | Slack, Discord, email, console, Typer CLI |
-| Docker and CI | Planned | Container builds, GitHub Actions, coverage |
+| Kernel | Implemented | Sync/threaded module lifecycle, plugin discovery, event bus, metrics, config |
+| API | Implemented | REST routes, WebSocket event streaming, request logging, app lifespan |
+| Persistence | Implemented | SQLite-backed alerts, sessions, and dry-run command ledger |
+| Visual module | Implemented | YOLO wrapper, tracker, zones, speed estimator, heatmap, pipeline |
+| Network module | Implemented | Synthetic traffic generator, feature windows, anomaly detector, pipeline |
+| Finance module | Implemented | OHLCV replay, features, Isolation Forest, CUSUM, anomaly events |
+| Infrastructure module | Implemented | psutil collector, log analyzer, threshold events |
+| Command layer | Simulated only | `/commands` proposes and approves dry-run commands; no hardware adapters |
+| Dashboard | Early v0 | Streamlit command center, WebSocket feed, visual page and reusable charts |
+| Tests | Green locally | 90 tests covering core, API, visual, finance, infrastructure, command flow |
+| Docker/CI/CLI/notifications | Next | Planned for v1 hardening |
 
 ## Architecture
 
 ```text
-                  +----------------------+
-                  |      Data Sources    |
-                  | video | packets | OHLCV | system |
-                  +----------+-----------+
-                             |
-                             v
-                +------------+-------------+
-                |      Domain Modules      |
-                | visual | network | finance | infra |
-                +------------+-------------+
-                             |
-                             v
-                    +--------+--------+
-                    |    Event Bus    |
-                    | pub/sub + history |
-                    +--------+--------+
-                             |
-          +------------------+------------------+
-          |                                     |
-          v                                     v
- +--------+---------+                 +---------+--------+
- |  Alert Manager   |                 | Metrics Collector |
- | cooldown/dedup   |                 | latest + rolling  |
- | escalation       |                 | module metrics    |
- +--------+---------+                 +---------+--------+
-          |                                     |
-          +------------------+------------------+
-                             |
-                             v
-                    +--------+--------+
-                    |   FastAPI API   |
-                    | REST + WebSocket |
-                    +--------+--------+
-                             |
-                 +-----------+-----------+
-                 |                       |
-                 v                       v
-          Streamlit Dashboard      Notifications / Export
+                 data sources
+        video | packets | OHLCV | system logs
+                         |
+                         v
+              +----------------------+
+              |    domain modules    |
+              | visual network       |
+              | finance infrastructure|
+              +----------+-----------+
+                         |
+                         v
+              +----------------------+
+              |       EventBus       |
+              | publish / subscribe  |
+              | filtered history     |
+              +----------+-----------+
+                         |
+          +--------------+---------------+
+          |                              |
+          v                              v
+ +------------------+          +-------------------+
+ |   AlertManager   |          | MetricsCollector  |
+ | cooldown / dedup |          | latest + history  |
+ | escalation       |          | rolling stats     |
+ +--------+---------+          +---------+---------+
+          |                              |
+          +--------------+---------------+
+                         |
+                         v
+              +----------------------+
+              |      FastAPI API     |
+              | REST + WebSocket     |
+              +----------+-----------+
+                         |
+       +-----------------+------------------+
+       |                                    |
+       v                                    v
+ Streamlit dashboard              exports / dry-run commands
 ```
 
-## Modules
+## v0 Module Matrix
 
-| Module | Purpose | Signals | Detection Strategy | Events |
-|:--|:--|:--|:--|:--|
-| Visual | People and zone monitoring | Detections, tracks, dwell time, speed | YOLOv8, IoU tracking, rule logic | `ZONE_ENTRY`, `LOITERING`, `CROWD_ALERT`, `SPEED_ANOMALY` |
-| Network | Traffic anomaly detection | PPS, BPS, unique IPs, ports, entropy | Isolation Forest, EMA z-score, hard rules | `NET_METRICS`, `NET_ANOMALY`, `NET_BASELINE_SET` |
-| Finance | Market anomaly detection | OHLCV, returns, volatility, RSI, volume | Isolation Forest, CUSUM, flash-crash rules | `FIN_METRICS`, `FIN_FLASH_CRASH`, `FIN_VOLATILITY_SPIKE` |
-| Infrastructure | Host and log monitoring | CPU, RAM, disk, network I/O, process stats, logs | psutil thresholds, Isolation Forest, error-rate spikes | `INFRA_CPU_HIGH`, `INFRA_RAM_HIGH`, `INFRA_LOG_ERROR_SPIKE` |
+| Module ID | Domain | Main Inputs | Outputs |
+|:--|:--|:--|:--|
+| `visual` | Computer vision | webcam, video file, RTSP stream | `ZONE_ENTRY`, `ZONE_EXIT`, `LOITERING`, `CROWD_ALERT`, `SPEED_ANOMALY` |
+| `network` | Traffic security | generated packet stream | `NET_METRICS`, `NET_ANOMALY` |
+| `timeseries` | Finance replay | OHLCV CSV | `FIN_METRICS`, `FIN_ANOMALY` |
+| `infrastructure` | Host monitoring | psutil metrics, syslog-style file | `INFRA_CPU_HIGH`, `INFRA_RAM_HIGH`, `INFRA_LOG_ANOMALY` |
+| `actuation_gateway` | Simulated command execution | approved dry-run commands | `COMMAND_EXECUTED`, `COMMAND_FAILED` |
 
-## Current Repository Layout
+## Repository Layout
 
 ```text
 IRMDS/
-|-- api/                  FastAPI app, routes, schemas, dependencies
-|-- core/                 Base module contract, event bus, metrics, config
-|-- dashboard/            Streamlit app, visual page, chart and websocket helpers
-|-- data/                 Runtime/sample data such as zone configuration
-|-- models/               Model documentation and runtime weight location
+|-- api/                  FastAPI app, dependencies, schemas, REST and WS routes
+|-- core/                 kernel: modules, events, metrics, alerts, commands, DB
+|-- dashboard/            Streamlit app, visual page, chart builders, WS client
+|-- data/                 small deterministic sample data and zone config
+|-- docs/                 project vision, v0/v1 plan, gstack notes
+|-- models/               model provenance docs and ignored runtime weights
 |-- modules/
-|   |-- visual/           Visual detection pipeline
-|   |-- network/          Traffic generator, feature extraction, detector
-|   |-- timeseries/       Finance module package placeholder
-|   `-- infrastructure/   Infrastructure module package placeholder
-|-- notifications/        Notification package placeholder
-|-- tests/                Unit and integration tests
-|-- pyproject.toml        Project metadata and tool configuration
-|-- requirements.txt      Runtime dependencies
-`-- requirements-dev.txt  Test and development dependencies
+|   |-- visual/           YOLO, tracking, speed, zones, heatmap, pipeline
+|   |-- network/          packet generation, features, anomaly detection, pipeline
+|   |-- timeseries/       finance replay, features, anomaly detection, pipeline
+|   `-- infrastructure/   psutil collector, log analyzer, pipeline
+|-- notifications/        notification package placeholder for v1
+|-- scripts/              sample data generation and manual smoke checks
+|-- tests/                unit and integration coverage
+|-- pyproject.toml        project metadata plus ruff, mypy, pytest config
+|-- requirements.txt      runtime dependencies
+`-- requirements-dev.txt  development and test dependencies
 ```
 
 ## Quick Start
 
-### 1. Clone and install
+### 1. Create an environment
 
 ```bash
 git clone https://github.com/Eishaan-Khatri/IRMDS.git
 cd IRMDS
 python -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements-dev.txt
+python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
-On macOS/Linux:
+macOS/Linux activation:
 
 ```bash
 source .venv/bin/activate
 ```
 
-### 2. Configure
+### 2. Configure defaults
 
 ```bash
 copy .env.example .env
 ```
 
-On macOS/Linux:
+macOS/Linux:
 
 ```bash
 cp .env.example .env
 ```
 
-Key configuration values:
+Important defaults:
 
-| Variable | Default | Description |
+| Variable | Default | Purpose |
 |:--|:--|:--|
-| `IRMDS_VISUAL_SOURCE` | `0` | Webcam index, video path, or stream URL |
-| `IRMDS_VISUAL_MODEL_PATH` | `models/yolov8n.pt` | YOLOv8 model path |
-| `IRMDS_DATABASE_URL` | `sqlite:///data/irmds.db` | SQLite database URL |
+| `IRMDS_DATABASE_URL` | `sqlite:///data/irmds.db` | local persistence |
 | `IRMDS_API_HOST` | `0.0.0.0` | API bind host |
 | `IRMDS_API_PORT` | `8000` | API port |
-| `IRMDS_CORS_ORIGINS` | `*` | Allowed dashboard origins |
+| `IRMDS_CORS_ORIGINS` | `*` | dashboard/API CORS |
+| `IRMDS_VISUAL_SOURCE` | `0` | webcam index or video path |
+| `IRMDS_VISUAL_MODEL_PATH` | `models/yolov8n.pt` | YOLO weight location |
+| `IRMDS_FINANCE_DATA_PATH` | `data/sample_stock.csv` | finance replay CSV |
+| `IRMDS_INFRA_LOG_PATH` | `data/sample_syslog.log` | log analyzer input |
 
-### 3. Run tests
+### 3. Generate sample data
+
+The repo includes small deterministic samples. Regenerate them when needed:
 
 ```bash
-pytest tests -v
+python scripts/generate_sample_data.py
 ```
 
-Focused visual pipeline checks:
+### 4. Run tests
 
 ```bash
-pytest tests/unit/test_tracker.py tests/unit/test_speed_estimator.py tests/unit/test_zone_manager.py tests/integration/test_visual_pipeline.py -v
+ruff check .
+mypy core api modules
+pytest tests -q
 ```
 
-### 4. Run the API
+On Windows systems with restricted temp folders, use a repo-local temp base:
+
+```bash
+set TEMP=%CD%\.tmp
+set TMP=%CD%\.tmp
+pytest tests -q --basetemp=.pytest_tmp
+```
+
+### 5. Start the API
 
 ```bash
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-API docs are available at:
+Open:
 
 ```text
 http://localhost:8000/docs
 ```
 
-### 5. Run the dashboard
+### 6. Start the dashboard
 
 ```bash
 streamlit run dashboard/app.py
 ```
 
-Dashboard URL:
+Open:
 
 ```text
 http://localhost:8501
 ```
 
-## API Overview
+## API Surface
 
 | Method | Path | Description |
 |:--|:--|:--|
-| `GET` | `/` | System identity and status |
-| `GET` | `/health` | Overall and per-module health |
-| `GET` | `/config` | Sanitized runtime configuration |
-| `GET` | `/modules` | Registered modules and lifecycle status |
-| `POST` | `/modules/{id}/start` | Start a module |
-| `POST` | `/modules/{id}/stop` | Stop a module |
-| `POST` | `/modules/{id}/restart` | Restart a module |
-| `GET` | `/alerts` | Paginated alert history |
-| `GET` | `/alerts/latest` | Latest alerts |
-| `GET` | `/alerts/stats` | Alert aggregations |
-| `GET` | `/metrics` | Metrics for all running modules |
-| `GET` | `/metrics/{module_id}` | Metrics for one module |
-| `GET` | `/sessions` | Monitoring session history |
-| `POST` | `/sessions/start` | Start a monitoring session |
-| `POST` | `/sessions/stop` | Stop the active session |
-| `GET` | `/export/alerts?format=csv` | Export alerts as CSV |
-| `GET` | `/export/alerts?format=json` | Export alerts as JSON |
-| `WS` | `/ws/events` | Real-time event stream |
+| `GET` | `/` | system identity and uptime |
+| `GET` | `/health` | overall health plus module health |
+| `GET` | `/config` | sanitized runtime config |
+| `GET` | `/modules` | discovered modules and statuses |
+| `POST` | `/modules/{id}/start` | start a module |
+| `POST` | `/modules/{id}/stop` | stop a module |
+| `POST` | `/modules/{id}/restart` | restart a module |
+| `GET` | `/alerts` | paginated/filterable alert history |
+| `GET` | `/alerts/latest` | latest alerts |
+| `GET` | `/alerts/stats` | alert counts by severity/module/type/time |
+| `GET` | `/metrics` | latest metrics for all modules |
+| `GET` | `/metrics/{module_id}` | latest metrics for one module |
+| `GET` | `/sessions` | session history |
+| `POST` | `/sessions/start` | start a monitoring session |
+| `POST` | `/sessions/stop` | stop the active session |
+| `GET` | `/export/alerts?format=csv` | export alerts as CSV |
+| `GET` | `/export/alerts?format=json` | export alerts as JSON |
+| `POST` | `/commands` | propose a dry-run command |
+| `GET` | `/commands` | list recent dry-run commands |
+| `GET` | `/commands/{id}` | inspect command state |
+| `POST` | `/commands/{id}/approve` | approve simulated execution |
+| `WS` | `/ws/events` | real-time event stream |
 
-Example event payload:
+Example event:
 
 ```json
 {
   "id": "evt_a3f8c2d1",
-  "timestamp": "2026-04-23T10:15:32.456000+00:00",
-  "module": "visual",
-  "type": "SPEED_ANOMALY",
+  "timestamp": "2026-05-04T10:15:32.456000+00:00",
+  "module": "network",
+  "type": "NET_ANOMALY",
   "severity": "CRITICAL",
   "data": {
-    "object_id": 3,
-    "speed_ms": 3.4,
-    "classification": "RUNNING"
+    "anomaly_type": "DDOS_SUSPECT",
+    "packets_per_second": 15000
   }
 }
 ```
 
-## Visual Module
+Example dry-run command:
 
-The visual pipeline is the most mature module in the current codebase. It turns
-video frames into structured real-time events.
+```json
+{
+  "action": "SET_MAINTENANCE_MODE",
+  "target_device": "SIM_DEVICE_01",
+  "payload": {
+    "reason": "operator test"
+  },
+  "dry_run": true
+}
+```
 
-Processing flow:
+## Safety Boundary
+
+The command layer is deliberately simulation-only in v0.
+
+- `dry_run` defaults to `true`
+- `CommandBus` forces commands back to `dry_run=true` before persistence
+- `ActuationGateway` never talks to hardware
+- approved commands only produce simulated state transitions and events
+- real actuation is deferred until policy checks, authentication, audit logs,
+  simulation tests, and hardware safety interlocks exist
+
+This keeps the project honest: IRMDS v0 proves the runtime and monitoring loop,
+not physical control.
+
+## Testing Evidence
+
+Current stabilization branch verification:
 
 ```text
-FrameSource -> YOLOv8 Detector -> IoU Tracker -> Zone Manager
-            -> Speed Estimator -> Heatmap -> Event Bus + Metrics
+ruff check .                 -> passed
+mypy core api modules        -> passed
+pytest tests -q              -> 90 passed
+compileall                   -> passed
+git diff --check             -> passed
 ```
 
-Implemented capabilities:
+Coverage includes:
 
-- Lazy YOLOv8 model loading
-- Person detection filtering
-- IoU-based persistent tracking IDs
-- Polygon zone entry and exit events
-- Loitering and crowd alerts
-- Dynamic speed estimation using bounding-box height calibration
-- Motion heatmap accumulation and export
-- Headless background pipeline compatible with API control
-- Unit and integration tests with mocked frame sources and detections
+- config defaults and environment overrides
+- event publish/subscribe/filter/history/unsubscribe
+- alert cooldown, deduplication, escalation, persistence callback path
+- visual tracker, zone manager, speed estimator, and visual pipeline
+- API startup, REST routes, WebSocket event streaming
+- module discovery for visual/network/timeseries/infrastructure
+- finance replay through `PluginRegistry`
+- infrastructure pipeline with mocked `psutil`
+- dry-run command propose, fetch, approve, simulated completion, event emission
 
-## Network Module
+## What v0 Proves
 
-The network module is designed for synthetic traffic simulation and streaming
-network anomaly detection.
-
-Target flow:
+IRMDS v0 proves the core platform shape:
 
 ```text
-TrafficGenerator -> FeatureExtractor -> NetworkAnomalyDetector
-                 -> Event Bus + Metrics
+new module -> BaseModule -> EventBus -> AlertManager/Metrics -> API -> dashboard
 ```
 
-Designed detection coverage:
+That is the important architectural bet. The modules are reference
+implementations that show the kernel can carry different domains without
+special-casing the API.
 
-- DDoS-like packet bursts
-- Port scanning behavior
-- Data exfiltration-like byte spikes
-- General traffic anomalies through Isolation Forest
-- Short-term spikes through EMA z-score logic
+## Known Limitations
 
-## Finance Module
+- Visual inference depends on local camera/video/model availability.
+- Network traffic is synthetic in v0, not live packet capture.
+- Finance replay uses deterministic CSV samples, not exchange feeds.
+- Infrastructure monitoring is local host-focused.
+- Dashboard is functional but still early.
+- Docker, CI, CLI, and notification adapters are planned but not complete.
+- No real hardware actuation exists or should be inferred from the command API.
 
-The finance module will replay or synthesize OHLCV data and detect market
-anomalies in real time.
+## v1 Direction
 
-Planned features:
+The next useful release should harden the project rather than add many modules:
 
-- CSV replay with configurable speed
-- Synthetic random-walk generator with injected anomalies
-- Log returns, rolling volatility, RSI, Bollinger position, momentum
-- Flash crash rule detection
-- CUSUM regime-change detection
-- Isolation Forest anomaly scoring
+1. Docker Compose for API + dashboard
+2. GitHub Actions CI running lint, types, and tests
+3. Typer CLI for start, stop, status, config, and alert tailing
+4. notification manager with console, Slack, Discord, email adapters
+5. dashboard pages for all four modules
+6. Prometheus-compatible metrics endpoint
+7. module starter template and contributor guide
 
-## Infrastructure Module
+## Long-Term Vision
 
-The infrastructure module will monitor host health and log streams.
+The long-term idea is a runtime for intelligent physical spaces: small kernel,
+strict module contract, typed events, observable behavior, safe simulation, and
+eventual policy-gated command execution.
 
-Planned features:
+The near-term discipline is to keep v0 narrow and real. Make the monitoring
+runtime reliable first; only then grow toward control-plane features.
 
-- CPU, RAM, disk, network I/O, process count
-- Top CPU and RAM processes
-- Log tailing and severity classification
-- Error-rate spike detection
-- Static critical thresholds and Isolation Forest anomaly scoring
+See:
 
-## Notifications
-
-IRMDS is designed to route processed alerts to multiple notification channels.
-
-Target channels:
-
-- Console notifier with Rich formatting
-- Slack incoming webhook
-- Discord webhook
-- SMTP email
-
-Notification routing will respect the configured minimum severity:
-
-```bash
-IRMDS_NOTIFY_ON_SEVERITY=CRITICAL
-```
-
-## CLI Target
-
-The planned Typer CLI will provide a local control surface:
-
-```bash
-irmds start
-irmds start --modules visual,network
-irmds status
-irmds alerts --follow
-irmds config show
-irmds benchmark --module visual --duration 30
-irmds data generate --all
-```
-
-## Docker Target
-
-The deployment target is a two-service Docker Compose stack:
-
-```text
-api        FastAPI service on port 8000
-dashboard  Streamlit service on port 8501
-```
-
-Expected command once Docker files are implemented:
-
-```bash
-docker compose -f docker/docker-compose.yml up --build
-```
-
-## Testing Strategy
-
-| Layer | Purpose |
-|:--|:--|
-| Unit tests | Validate isolated core and module components |
-| Integration tests | Validate pipeline behavior from input to emitted events |
-| API tests | Validate REST and WebSocket behavior with FastAPI TestClient |
-| E2E tests | Validate all modules through API, event bus, metrics, and dashboard |
-
-Current test coverage includes:
-
-- Event bus publish, subscribe, filtering, history, unsubscribe
-- Alert cooldown, deduplication, escalation, callback routing
-- Config defaults and environment overrides
-- Tracker association and IoU behavior
-- Speed estimator physics and classification
-- Zone manager geometry, entry, exit, loitering, crowd alerts
-- Visual pipeline integration with synthetic frames
-
-## Roadmap
-
-| Milestone | Goal |
-|:--|:--|
-| Stabilization | Fix API startup, network BaseModule contract, WebSocket filters, dashboard runtime bug |
-| Network v1 | Complete network pipeline and tests |
-| Finance v1 | Add OHLCV data source, features, detector, pipeline, tests |
-| Infrastructure v1 | Add psutil collector, log analyzer, detector, pipeline, tests |
-| Persistence | Persist processed alerts and session summaries consistently |
-| Notifications | Add console, Slack, Discord, email routing |
-| CLI | Add Typer commands for start, stop, status, alerts, config, benchmark |
-| Dashboard v1 | Complete overview, visual, network, finance, infra, alerts pages |
-| Deployment | Add Docker, GitHub Actions CI, coverage, release workflow |
-| Portfolio polish | Add final README assets, screenshots, benchmark table, GitHub Pages showcase |
-
-## Design Principles
-
-- Modular first: adding a new domain should not require rewriting the API.
-- Structured events: every module speaks the same event language.
-- Real-time by default: metrics and alerts are meant to stream, not batch.
-- Testable pipelines: live dependencies are mocked in CI-friendly tests.
-- Operator clarity: alert cooldown, deduplication, and escalation are first-class.
-- Honest production shape: configuration, logging, persistence, Docker, and CI are part of the design, not afterthoughts.
-
-## Related Work
-
-IRMDS is the production-oriented evolution of the visual anomaly detection work
-in Edge-VCA:
-
-- Edge-VCA: https://github.com/Eishaan-Khatri/Edge-VCA
-- IRMDS: https://github.com/Eishaan-Khatri/IRMDS
+- [docs/vision.md](docs/vision.md)
+- [docs/plan.md](docs/plan.md)
+- [docs/gstack_README.md](docs/gstack_README.md)
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE).
+IRMDS is released under the MIT License. See [LICENSE](LICENSE).
