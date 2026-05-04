@@ -1,6 +1,6 @@
 [project]
 name = "irmds"
-version = "1.0.0"
+version = "0.1.0"
 description = "Intelligent Real-Time Monitoring & Decision System — domain-agnostic anomaly detection across vision, network, finance, and infrastructure."
 readme = "README.md"
 license = "MIT"

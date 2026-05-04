@@ -94,7 +94,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="IRMDS API",
         description="Intelligent Real-Time Monitoring & Decision System",
-        version="1.0.0",
+        version="0.1.0",
         lifespan=lifespan,
     )
 

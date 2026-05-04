@@ -18,7 +18,7 @@ class FinancePipeline(BaseModule):
 
     module_id = "timeseries"
     display_name = "Financial Engine"
-    version = "1.0.0"
+    version = "0.1.0"
 
     def _run(self) -> None:
         """Main replayer loop."""

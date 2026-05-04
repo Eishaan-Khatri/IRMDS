@@ -24,7 +24,7 @@ class NetworkPipeline(BaseModule):
 
     module_id = "network"
     display_name = "Network Security Analytics"
-    version = "1.0.0"
+    version = "0.1.0"
 
     def __init__(self, event_bus, metrics, config):
         super().__init__(event_bus=event_bus, metrics=metrics, config=config)

@@ -51,12 +51,12 @@ class VisualPipeline(BaseModule):
     Module identity:
         module_id:    "visual"
         display_name: "Visual Anomaly Detection"
-        version:      "1.0.0"
+        version:      "0.1.0"
     """
 
     module_id = "visual"
     display_name = "Visual Anomaly Detection"
-    version = "1.0.0"
+    version = "0.1.0"
 
     def _run(self) -> None:
         """Main processing loop — runs in a background thread.

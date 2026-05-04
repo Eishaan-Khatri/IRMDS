@@ -18,7 +18,7 @@ class InfrastructurePipeline(BaseModule):
 
     module_id = "infrastructure"
     display_name = "Infrastructure Monitor"
-    version = "1.0.0"
+    version = "0.1.0"
 
     def _run(self) -> None:
         """Main polling loop."""

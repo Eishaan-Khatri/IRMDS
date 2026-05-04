@@ -58,7 +58,7 @@ class BaseModule(ABC):
     Subclasses must set as class attributes:
         - module_id:    Unique string identifier (e.g., "visual")
         - display_name: Human-readable name (e.g., "Visual Anomaly Detection")
-        - version:      Semantic version string (e.g., "1.0.0")
+        - version:      Semantic version string (e.g., "0.1.0")
 
     Provided by the base class:
         - start() / stop()     → Thread lifecycle management
@@ -72,7 +72,7 @@ class BaseModule(ABC):
     # ── Subclass MUST override these ──────────────────────
     module_id: str = ""
     display_name: str = ""
-    version: str = "1.0.0"
+    version: str = "0.1.0"
 
     def __init__(
         self,
