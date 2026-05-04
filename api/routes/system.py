@@ -54,7 +54,7 @@ def get_health(request: Request, registry: PluginRegistry = Depends(get_registry
 
     return HealthResponse(
         status="healthy" if all_healthy else "degraded",
-        version="1.0.0",
+        version="0.1.0",
         uptime_seconds=uptime,
         modules=module_healths,
     )

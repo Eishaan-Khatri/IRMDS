@@ -145,5 +145,8 @@ def create_app() -> FastAPI:
     return app
 
 
-# Create the global app instance for Uvicorn
-app = create_app()
+# Create the global app instance for Uvicorn.
+irmds_api = create_app()
+
+# Backward-compatible ASGI name for tools and examples that expect api.main:app.
+app = irmds_api

@@ -49,7 +49,10 @@ scope for v0.
 | Command layer | Simulated only | `/commands` proposes and approves dry-run commands; no hardware adapters |
 | Dashboard | Early v0 | Streamlit command center, WebSocket feed, visual page and reusable charts |
 | Tests | Green locally | 90 tests covering core, API, visual, finance, infrastructure, command flow |
-| Docker/CI/CLI/notifications | Next | Planned for v1 hardening |
+| CI | Added after v0.1.0 | GitHub Actions runs compile, ruff, mypy, and pytest |
+| Docker Compose | Added after v0.1.0 | Root Compose stack boots API + dashboard |
+| CLI/demo | Added after v0.1.0 | `irmds demo` / `python scripts/demo.py` starts a sample-safe local demo |
+| Notifications | Planned | Notification adapters remain future v1 work |
 
 ## Architecture
 
@@ -108,11 +111,13 @@ scope for v0.
 
 ```text
 IRMDS/
+|-- .github/workflows/     GitHub Actions CI
 |-- api/                  FastAPI app, dependencies, schemas, REST and WS routes
+|-- docker/               Dockerfiles for API and dashboard
 |-- core/                 kernel: modules, events, metrics, alerts, commands, DB
 |-- dashboard/            Streamlit app, visual page, chart builders, WS client
 |-- data/                 small deterministic sample data and zone config
-|-- docs/                 project vision, v0/v1 plan, gstack notes
+|-- docs/                 project vision, v0/v1 plan, module guide, release notes
 |-- models/               model provenance docs and ignored runtime weights
 |-- modules/
 |   |-- visual/           YOLO, tracking, speed, zones, heatmap, pipeline
@@ -122,12 +127,51 @@ IRMDS/
 |-- notifications/        notification package placeholder for v1
 |-- scripts/              sample data generation and manual smoke checks
 |-- tests/                unit and integration coverage
+|-- CHANGELOG.md          release history
+|-- compose.yml           root Docker Compose stack
 |-- pyproject.toml        project metadata plus ruff, mypy, pytest config
 |-- requirements.txt      runtime dependencies
 `-- requirements-dev.txt  development and test dependencies
 ```
 
 ## Quick Start
+
+### Fastest sample demo
+
+After installing dependencies, run the sample-safe local demo:
+
+```bash
+python scripts/demo.py
+```
+
+Or, after installing the package in editable mode:
+
+```bash
+python -m pip install -e .
+irmds demo
+```
+
+The demo:
+
+- regenerates deterministic sample data
+- starts the FastAPI backend
+- starts the Streamlit dashboard unless `--no-dashboard` is passed
+- starts sample-friendly modules: `network`, `timeseries`, and `infrastructure`
+- leaves `visual` opt-in because it may need a webcam/video file and YOLO weights
+- proposes and approves one dry-run command so the command ledger shows activity
+
+Open:
+
+```text
+http://localhost:8000/docs
+http://localhost:8501
+```
+
+Run a short smoke version that starts, probes, seeds one command, and exits:
+
+```bash
+python scripts/demo.py --smoke --no-dashboard
+```
 
 ### 1. Create an environment
 
@@ -197,6 +241,12 @@ pytest tests -q --basetemp=.pytest_tmp
 ### 5. Start the API
 
 ```bash
+uvicorn api.main:irmds_api --host 0.0.0.0 --port 8000 --reload
+```
+
+Compatibility alias:
+
+```bash
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
@@ -217,6 +267,60 @@ Open:
 ```text
 http://localhost:8501
 ```
+
+## Docker Compose
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://localhost:8000/docs
+http://localhost:8501
+```
+
+Stop the stack:
+
+```bash
+docker compose down
+```
+
+The Compose stack is intentionally sample-safe. It starts the API and
+dashboard, mounts `data/` and `logs/`, and does not require a camera, YOLO
+weights, or real hardware.
+
+## GitHub Actions CI
+
+The repository includes `.github/workflows/ci.yml`.
+
+CI runs:
+
+```bash
+python -m compileall -q api core modules dashboard cli notifications tests scripts
+ruff check .
+mypy core api modules
+pytest tests -q --basetemp=.pytest_tmp
+```
+
+The CI environment is configured to avoid webcam/model dependencies and to use
+a temporary SQLite database.
+
+## Building A Module
+
+New modules should inherit `BaseModule`, publish structured events, and push
+metrics through `MetricsCollector`.
+
+Start here:
+
+- [Module Starter Guide](docs/module_starter.md)
+
+The important rule: the kernel should not need special-case code for a new
+domain. If adding Module 5 requires changing every API route, the module
+boundary is wrong.
 
 ## API Surface
 
@@ -290,7 +394,7 @@ not physical control.
 
 ## Testing Evidence
 
-Current stabilization branch verification:
+Current v0 verification:
 
 ```text
 ruff check .                 -> passed
@@ -299,6 +403,9 @@ pytest tests -q              -> 90 passed
 compileall                   -> passed
 git diff --check             -> passed
 ```
+
+CI now runs the same core checks on GitHub Actions for new pushes and pull
+requests.
 
 Coverage includes:
 
@@ -331,20 +438,23 @@ special-casing the API.
 - Finance replay uses deterministic CSV samples, not exchange feeds.
 - Infrastructure monitoring is local host-focused.
 - Dashboard is functional but still early.
-- Docker, CI, CLI, and notification adapters are planned but not complete.
+- Docker and CI are present, but should still be verified on a clean machine
+  before calling the next release fully reproducible.
+- Notification adapters are planned but not complete.
 - No real hardware actuation exists or should be inferred from the command API.
 
 ## v1 Direction
 
-The next useful release should harden the project rather than add many modules:
+The next useful release should harden reproducibility and first-run experience:
 
-1. Docker Compose for API + dashboard
-2. GitHub Actions CI running lint, types, and tests
-3. Typer CLI for start, stop, status, config, and alert tailing
+1. verify the new Docker stack from a fresh clone
+2. record a short demo video
+3. expand the CLI beyond `demo`
 4. notification manager with console, Slack, Discord, email adapters
 5. dashboard pages for all four modules
 6. Prometheus-compatible metrics endpoint
-7. module starter template and contributor guide
+7. contributor guide and richer module starter template
+8. release automation for tags and changelog checks
 
 ## Long-Term Vision
 

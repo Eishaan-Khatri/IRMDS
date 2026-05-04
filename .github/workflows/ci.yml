@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: lint, type-check, test
+    runs-on: ubuntu-latest
+
+    env:
+      IRMDS_DATABASE_URL: sqlite:///./.tmp/ci_irmds.db
+      IRMDS_VISUAL_SOURCE: "0"
+      IRMDS_VISUAL_MODEL_PATH: models/yolov8n.pt
+      IRMDS_NETWORK_BASELINE_WINDOWS: "5"
+      IRMDS_FINANCE_REPLAY_SPEED: "1000"
+      IRMDS_INFRA_POLL_INTERVAL: "0.1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Compile importable packages
+        run: python -m compileall -q api core modules dashboard cli notifications tests scripts
+
+      - name: Ruff
+        run: ruff check .
+
+      - name: Mypy
+        run: mypy core api modules
+
+      - name: Pytest
+        run: pytest tests -q --basetemp=.pytest_tmp

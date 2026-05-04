@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      IRMDS_DATABASE_URL: sqlite:///data/irmds.db
+      IRMDS_NETWORK_BASELINE_WINDOWS: "5"
+      IRMDS_FINANCE_REPLAY_SPEED: "1000"
+      IRMDS_INFRA_POLL_INTERVAL: "1.0"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8501:8501"
+    environment:
+      IRMDS_API_URL: http://api:8000
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs

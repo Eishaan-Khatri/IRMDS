@@ -190,6 +190,12 @@ class CommandBus:
                 return None
 
             command = self._from_row(row)
+            if command.state == new_state:
+                return command
+
+            if command.state in {CommandState.COMPLETED, CommandState.FAILED}:
+                return command
+
             if new_state not in self._VALID_TRANSITIONS[command.state]:
                 command.state = CommandState.FAILED
                 command.error_reason = (

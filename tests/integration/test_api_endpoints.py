@@ -215,5 +215,11 @@ def test_command_dry_run_lifecycle(client: TestClient, app):
     assert recent_commands.status_code == 200
     assert any(cmd["id"] == command_id for cmd in recent_commands.json()["commands"])
 
-    events = app.state.event_bus.get_history(limit=20, module="actuation_gateway")
+    events = []
+    for _ in range(20):
+        events = app.state.event_bus.get_history(limit=20, module="actuation_gateway")
+        if any(event.type == "COMMAND_EXECUTED" for event in events):
+            break
+        time.sleep(0.05)
+
     assert any(event.type == "COMMAND_EXECUTED" for event in events)

@@ -12,7 +12,8 @@ build/
 .venv/
 .deps/
 .tmp/
-.pytest_tmp/
+.pytest_tmp*/
+.gstack/
 .env
 .env.local
 .env.production

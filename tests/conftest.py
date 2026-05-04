@@ -8,12 +8,22 @@ This eliminates boilerplate and ensures consistent test setup.
 
 from __future__ import annotations
 
+import os
+import sqlite3
+from contextlib import suppress
+from pathlib import Path
+
 import pytest
 
 from core.alert_manager import AlertManager
+from core.command_bus import CommandBus
 from core.config import IRMDSConfig, get_config
 from core.event_bus import EventBus
 from core.metrics_collector import MetricsCollector
+
+TEST_RUNTIME_DIR = Path(".tmp/test_runtime")
+TEST_RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("IRMDS_DATABASE_URL", f"sqlite:///{TEST_RUNTIME_DIR / 'irmds_test.db'}")
 
 
 @pytest.fixture
@@ -47,3 +57,13 @@ def alert_manager(event_bus: EventBus, config: IRMDSConfig) -> AlertManager:
     manager.start()
     yield manager
     manager.stop()
+
+
+@pytest.fixture(autouse=True)
+def clean_command_ledger() -> None:
+    """Keep the dry-run command ledger isolated between tests."""
+    get_config.cache_clear()
+    db_path = CommandBus._path_from_database_url(get_config().database_url)
+    if db_path.exists():
+        with sqlite3.connect(db_path) as conn, suppress(sqlite3.OperationalError):
+            conn.execute("DELETE FROM commands")

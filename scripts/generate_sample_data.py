@@ -38,10 +38,10 @@ def generate_stock_data(path: Path, rows: int = 2000) -> None:
     prices[1720:1740] *= 0.85
 
     with path.open("w", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["timestamp", "open", "high", "low", "close", "volume"])
 
-        base_time = datetime.now(UTC) - timedelta(days=rows / 1440)
+        base_time = datetime(2026, 1, 1, tzinfo=UTC)
         for i in range(rows):
             ts = (base_time + timedelta(minutes=i)).isoformat()
             p = prices[i]
@@ -63,6 +63,8 @@ def generate_syslog_data(path: Path, rows: int = 500) -> None:
     """Generate a log file with various severity patterns."""
     print(f"Generating Infra log data: {path}")
 
+    random.seed(43)
+
     components = ["AUTH", "KERNEL", "SYSTEMD", "DB", "API", "DISK"]
     events = [
         ("INFO", "User login successful"),
@@ -74,7 +76,7 @@ def generate_syslog_data(path: Path, rows: int = 500) -> None:
     ]
 
     with path.open("w") as f:
-        base_time = datetime.now(UTC) - timedelta(hours=1)
+        base_time = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
         for i in range(rows):
             ts = (base_time + timedelta(seconds=i * 7)).strftime("%b %d %H:%M:%S")
             comp = random.choice(components)
@@ -112,6 +114,7 @@ def generate_zones_config(path: Path) -> None:
 
     with path.open("w") as f:
         json.dump(zones, f, indent=4)
+        f.write("\n")
 
 
 def main() -> None:
