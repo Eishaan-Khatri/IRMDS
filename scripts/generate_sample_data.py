@@ -75,7 +75,7 @@ def generate_syslog_data(path: Path, rows: int = 500) -> None:
         ("CRITICAL", "Out of memory: Kill process"),
     ]
 
-    with path.open("w") as f:
+    with path.open("w", newline="\n") as f:
         base_time = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
         for i in range(rows):
             ts = (base_time + timedelta(seconds=i * 7)).strftime("%b %d %H:%M:%S")
@@ -112,7 +112,7 @@ def generate_zones_config(path: Path) -> None:
         },
     ]
 
-    with path.open("w") as f:
+    with path.open("w", newline="\n") as f:
         json.dump(zones, f, indent=4)
         f.write("\n")
 
