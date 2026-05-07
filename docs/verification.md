@@ -6,20 +6,10 @@ healthy without reading the whole codebase.
 
 ## Verified Baseline
 
-Latest verified main commit:
+Current base commit for this hardening branch:
 
 ```text
-f32c26e fix: slim docker demo dependencies
-```
-
-GitHub Actions status checked on 2026-05-07:
-
-```text
-workflow: CI
-commit: f32c26e0f54c779689e6ba40bdf424087f4f4d7c
-status: completed
-conclusion: success
-url: https://github.com/Eishaan-Khatri/IRMDS/actions/runs/25483507512
+6f816a8 Merge pull request #1 from Eishaan-Khatri/codex/v0.2-demo-polish
 ```
 
 ## Local Quality Gates
@@ -27,7 +17,7 @@ url: https://github.com/Eishaan-Khatri/IRMDS/actions/runs/25483507512
 Run from the repository root:
 
 ```bash
-python -m compileall -q api core modules dashboard cli notifications tests scripts
+python -m compileall -q api core modules dashboard cli notifications tests scripts examples
 ruff check .
 mypy core api modules
 pytest tests -q
@@ -39,8 +29,8 @@ Expected result:
 ```text
 compileall: no output
 ruff: All checks passed!
-mypy: Success: no issues found in 50 source files
-pytest: 91 passed
+mypy: Success: no issues found
+pytest: 98 passed
 git diff --check: no output
 ```
 

@@ -1,0 +1,47 @@
+name: Module Proposal
+description: Propose a new IRMDS module.
+title: "[Module]: "
+labels: ["module"]
+body:
+  - type: input
+    id: module_id
+    attributes:
+      label: Proposed Module ID
+      placeholder: "audio, energy, access_control"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Monitoring Problem
+      description: What physical or digital signal does this module monitor?
+    validations:
+      required: true
+  - type: textarea
+    id: inputs
+    attributes:
+      label: Inputs
+      description: Camera, CSV, packets, logs, sensors, API, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: events
+    attributes:
+      label: Events And Metrics
+      description: List expected event types and metrics.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test Strategy
+      description: How can this be tested deterministically in CI?
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety Boundary
+      options:
+        - label: This module does not perform real hardware actuation.
+          required: true

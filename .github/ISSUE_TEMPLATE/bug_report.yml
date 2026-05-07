@@ -1,0 +1,61 @@
+name: Bug Report
+description: Report a reproducible IRMDS bug.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What failed?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction Steps
+      description: Include exact commands, inputs, and expected output.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit Or Version
+      placeholder: "6f816a8 or v0.2.0"
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - core/runtime
+        - api
+        - dashboard
+        - cli
+        - docker
+        - visual module
+        - network module
+        - timeseries module
+        - infrastructure module
+        - docs
+        - other
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs Or Screenshots
+      render: text

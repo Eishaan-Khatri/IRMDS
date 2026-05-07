@@ -48,7 +48,7 @@ scope for v0.
 | Infrastructure module | Implemented | psutil collector, log analyzer, threshold events |
 | Command layer | Simulated only | `/commands` proposes and approves dry-run commands; no hardware adapters |
 | Dashboard | Early v0 | Streamlit command center, WebSocket feed, visual page and reusable charts |
-| Tests | Green locally | 91 tests covering core, API, visual, finance, infrastructure, command flow, starter-module discovery |
+| Tests | Green locally | 98 tests covering core, API, visual, finance, infrastructure, command flow, CLI, dashboard API handling, starter-module discovery |
 | CI | Added after v0.1.0 | GitHub Actions runs compile, ruff, mypy, and pytest |
 | Docker Compose | Added after v0.1.0 | Root Compose stack boots API + dashboard |
 | CLI/demo | Added after v0.1.0 | `irmds demo` / `python scripts/demo.py` starts a sample-safe local demo |
@@ -374,6 +374,8 @@ not physical control.
 Use the dedicated verification guide for exact checks and expected output:
 
 - [docs/verification.md](docs/verification.md)
+- [docs/troubleshooting.md](docs/troubleshooting.md)
+- [docs/api_contract.md](docs/api_contract.md)
 
 ## GitHub Actions CI
 
@@ -382,7 +384,7 @@ The repository includes `.github/workflows/ci.yml`.
 CI runs:
 
 ```bash
-python -m compileall -q api core modules dashboard cli notifications tests scripts
+python -m compileall -q api core modules dashboard cli notifications tests scripts examples
 ruff check .
 mypy core api modules
 pytest tests -q --basetemp=.pytest_tmp
@@ -465,10 +467,10 @@ Example dry-run command:
 Current v0 verification:
 
 ```text
+compileall                   -> passed
 ruff check .                 -> passed
 mypy core api modules        -> passed
-pytest tests -q              -> 91 passed
-compileall                   -> passed
+pytest tests -q              -> 98 passed
 git diff --check             -> passed
 ```
 
@@ -486,6 +488,18 @@ Coverage includes:
 - finance replay through `PluginRegistry`
 - infrastructure pipeline with mocked `psutil`
 - dry-run command propose, fetch, approve, simulated completion, event emission
+- CLI demo command construction and exit-code forwarding
+- dashboard API failure handling helpers
+
+## Project Hygiene
+
+Use these documents when opening issues, making changes, or checking the MVP
+boundary:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SECURITY.md](SECURITY.md)
+- [docs/mvp_hardening_plan.md](docs/mvp_hardening_plan.md)
+- [docs/module_starter.md](docs/module_starter.md)
 
 ## What v0 Proves
 

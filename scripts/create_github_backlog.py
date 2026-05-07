@@ -24,6 +24,21 @@ from typing import Any
 DEFAULT_REPO = "Eishaan-Khatri/IRMDS"
 API_ROOT = "https://api.github.com"
 
+LABELS: dict[str, str] = {
+    "api": "1D76DB",
+    "bug": "D73A4A",
+    "dashboard": "A371F7",
+    "demo": "5319E7",
+    "docs": "0075CA",
+    "dx": "0E8A16",
+    "module": "FBCA04",
+    "release": "0052CC",
+    "sdk": "C5DEF5",
+    "tests": "BFD4F2",
+    "verification": "5319E7",
+    "v0.2": "7057FF",
+}
+
 
 @dataclass(frozen=True)
 class IssueSpec:
@@ -123,7 +138,12 @@ MILESTONES: tuple[MilestoneSpec, ...] = (
 )
 
 
-def _request(method: str, path: str, token: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+def _request(
+    method: str,
+    path: str,
+    token: str,
+    payload: dict[str, Any] | None = None,
+) -> dict[str, Any] | list[dict[str, Any]]:
     data = json.dumps(payload).encode("utf-8") if payload is not None else None
     request = urllib.request.Request(
         f"{API_ROOT}{path}",
@@ -142,13 +162,64 @@ def _request(method: str, path: str, token: str, payload: dict[str, Any] | None 
     return json.loads(body) if body else {}
 
 
+def _request_list(method: str, path: str, token: str) -> list[dict[str, Any]]:
+    response = _request(method, path, token)
+    if isinstance(response, list):
+        return response
+    return []
+
+
+def _existing_milestones(repo: str, token: str) -> dict[str, int]:
+    milestones = _request_list("GET", f"/repos/{repo}/milestones?state=open&per_page=100", token)
+    return {item["title"]: item["number"] for item in milestones}
+
+
+def _existing_issues(repo: str, token: str) -> set[str]:
+    issues = _request_list("GET", f"/repos/{repo}/issues?state=all&per_page=100", token)
+    return {item["title"] for item in issues if "pull_request" not in item}
+
+
+def _existing_labels(repo: str, token: str) -> set[str]:
+    labels = _request_list("GET", f"/repos/{repo}/labels?per_page=100", token)
+    return {item["name"] for item in labels}
+
+
+def ensure_labels(repo: str, token: str, dry_run: bool) -> None:
+    """Create missing labels used by the release backlog."""
+    print("[labels] checking release backlog labels")
+    if dry_run:
+        for name in sorted(LABELS):
+            print(f"  [label] {name}")
+        return
+
+    existing = _existing_labels(repo, token)
+    for name, color in LABELS.items():
+        if name in existing:
+            continue
+        print(f"  [create label] {name}")
+        _request(
+            "POST",
+            f"/repos/{repo}/labels",
+            token,
+            {
+                "name": name,
+                "color": color,
+                "description": f"IRMDS {name} work item",
+            },
+        )
+
+
 def create_backlog(repo: str, token: str, dry_run: bool) -> None:
     """Create milestones and issues for the release backlog."""
+    ensure_labels(repo, token, dry_run)
+    existing_milestones = {} if dry_run else _existing_milestones(repo, token)
+    existing_issues = set() if dry_run else _existing_issues(repo, token)
+
     for milestone in MILESTONES:
         print(f"[milestone] {milestone.title}")
-        milestone_number = None
+        milestone_number = existing_milestones.get(milestone.title)
 
-        if not dry_run:
+        if not dry_run and milestone_number is None:
             created = _request(
                 "POST",
                 f"/repos/{repo}/milestones",
@@ -156,10 +227,15 @@ def create_backlog(repo: str, token: str, dry_run: bool) -> None:
                 {"title": milestone.title, "description": milestone.description},
             )
             milestone_number = created["number"]
+        elif not dry_run:
+            print(f"  [skip existing milestone] {milestone.title}")
 
         for issue in milestone.issues:
             print(f"  [issue] {issue.title}")
             if dry_run:
+                continue
+            if issue.title in existing_issues:
+                print(f"  [skip existing issue] {issue.title}")
                 continue
 
             _request(
@@ -173,6 +249,7 @@ def create_backlog(repo: str, token: str, dry_run: bool) -> None:
                     "milestone": milestone_number,
                 },
             )
+            existing_issues.add(issue.title)
 
 
 def parse_args() -> argparse.Namespace:
