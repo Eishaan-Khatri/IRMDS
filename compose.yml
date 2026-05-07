@@ -10,6 +10,7 @@ services:
       IRMDS_NETWORK_BASELINE_WINDOWS: "5"
       IRMDS_FINANCE_REPLAY_SPEED: "1000"
       IRMDS_INFRA_POLL_INTERVAL: "1.0"
+      IRMDS_DEMO_MODE: "true"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -37,6 +38,7 @@ services:
       - "8501:8501"
     environment:
       IRMDS_API_URL: http://api:8000
+      IRMDS_DEMO_MODE: "true"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs

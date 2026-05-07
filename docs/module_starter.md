@@ -1,14 +1,13 @@
 # IRMDS Module Starter Guide
 
-IRMDS modules are small domain pipelines that plug into the core runtime.
+IRMDS modules are domain pipelines that plug into the core runtime. The kernel
+does not need to know whether a module watches video, packets, stock ticks, logs,
+or something else. A module only needs to satisfy the `BaseModule` contract,
+publish structured events, and push metrics.
 
-The kernel does not need to know whether a module is looking at video frames,
-network packets, stock ticks, or system telemetry. A module only needs to
-implement the `BaseModule` contract, publish events, and push metrics.
+## Directory Contract
 
-## Module Contract
-
-Every module should live under:
+Every runtime-discoverable module should live under:
 
 ```text
 modules/<module_id>/
@@ -16,123 +15,151 @@ modules/<module_id>/
 `-- pipeline.py
 ```
 
-`pipeline.py` should expose a class that inherits from `core.base_module.BaseModule`.
-The plugin registry discovers modules by scanning `modules/*/pipeline.py`.
+The plugin registry scans `modules/*/pipeline.py`, imports the file, and
+registers classes that inherit from `core.base_module.BaseModule` and define a
+non-empty `module_id`.
 
-Required metadata:
+## BaseModule Lifecycle Contract
 
-| Field | Purpose |
-|:--|:--|
-| `module_id` | Stable machine-readable ID, for example `network` |
-| `display_name` | Human-readable name shown through the API |
-| `version` | Module version string |
-| `status` | Current lifecycle state |
+v0/v1 uses a synchronous, threaded lifecycle. Do not define async lifecycle
+methods for modules unless the kernel contract changes.
+
+Required class attributes:
+
+| Field | Required | Purpose |
+|:--|:--|:--|
+| `module_id` | yes | Stable machine ID, for example `network` |
+| `display_name` | yes | Human-readable label shown through the API |
+| `version` | yes | Module version string |
 
 Required methods:
 
-| Method | Purpose |
-|:--|:--|
-| `start()` | Allocate resources and begin processing |
-| `stop()` | Release resources and stop background work |
-| `health_check()` | Return cheap health information |
-| `get_metrics()` | Return current metrics for this module |
+| Method | Required | Rules |
+|:--|:--|:--|
+| `_run()` | yes | Main background loop. Runs after `BaseModule.start()` launches the thread. |
+| `health_check()` | yes | Must be cheap. Do not run inference, packet capture, or slow I/O here. |
+| `get_metrics()` | yes | Return current metrics for this module. Must be safe to call frequently. |
 
-## Minimal Example
+Inherited lifecycle methods:
+
+| Method | Provided By | Behavior |
+|:--|:--|:--|
+| `start()` | `BaseModule` | Sets status to `STARTING`, launches `_safe_run()` in a daemon thread. |
+| `stop()` | `BaseModule` | Clears `_running`, joins the worker thread, sets status to `STOPPED`. |
+| `restart()` | `BaseModule` | Calls `stop()` then `start()`. |
+| `to_dict()` | `BaseModule` | Serializes module state for API responses. |
+
+Status values:
+
+```text
+stopped -> starting -> running -> stopping -> stopped
+                         |
+                         v
+                       error
+```
+
+Implementation rules:
+
+- Loop while `self._running.is_set()`.
+- Release files, cameras, sockets, and model handles before `_run()` exits.
+- Catch expected domain errors inside `_run()` when recovery is possible.
+- Let unexpected errors raise so `BaseModule._safe_run()` can mark status as
+  `ERROR`.
+- Use `self.metrics.push(self.module_id, {...})` for metrics.
+- Use `self.event_bus.publish(Event(...))` for events.
+
+## Minimal Module
+
+The repo includes a starter example in:
+
+```text
+examples/minimal_module/
+```
+
+Core shape:
 
 ```python
-import threading
 import time
+from typing import Any
 
 from core.base_module import BaseModule, ModuleStatus
 from core.event_bus import Event, Severity
 
 
-class ExamplePipeline(BaseModule):
-    module_id = "example"
-    display_name = "Example Module"
+class MinimalPipeline(BaseModule):
+    module_id = "minimal"
+    display_name = "Minimal Example Module"
     version = "0.1.0"
 
-    def __init__(self, event_bus, metrics_collector, config):
-        super().__init__(event_bus, metrics_collector, config)
-        self._running = threading.Event()
-        self._thread = None
+    def _run(self) -> None:
+        while self._running.is_set():
+            self.metrics.push(self.module_id, {"heartbeat_count": 1})
+            self.event_bus.publish(
+                Event(
+                    module=self.module_id,
+                    type="MINIMAL_HEARTBEAT",
+                    severity=Severity.INFO,
+                    data={"message": "minimal module is alive"},
+                )
+            )
+            time.sleep(1.0)
 
-    def start(self) -> None:
-        if self.status == ModuleStatus.RUNNING:
-            return
-
-        self.status = ModuleStatus.STARTING
-        self._running.set()
-        self._thread = threading.Thread(target=self._run, daemon=True)
-        self._thread.start()
-        self.status = ModuleStatus.RUNNING
-
-    def stop(self) -> None:
-        self._running.clear()
-        if self._thread and self._thread.is_alive():
-            self._thread.join(timeout=2.0)
-        self.status = ModuleStatus.STOPPED
-
-    def health_check(self) -> dict:
+    def health_check(self) -> dict[str, Any]:
         return {
             "healthy": self.status == ModuleStatus.RUNNING,
             "status": self.status.value,
             "details": {"thread_alive": bool(self._thread and self._thread.is_alive())},
         }
 
-    def get_metrics(self) -> dict:
-        return self.metrics_collector.get_latest(self.module_id) or {}
-
-    def _run(self) -> None:
-        while self._running.is_set():
-            self.metrics_collector.push(self.module_id, {"example_value": 1})
-            self.event_bus.publish(
-                Event(
-                    module=self.module_id,
-                    type="EXAMPLE_HEARTBEAT",
-                    severity=Severity.INFO,
-                    data={"message": "example module is alive"},
-                )
-            )
-            time.sleep(1)
+    def get_metrics(self) -> dict[str, Any]:
+        return self.metrics.get_latest(self.module_id) or {}
 ```
 
-## Event Guidelines
+## Event Schema
 
-Events should be compact, structured, and stable.
+Runtime events are immutable `core.event_bus.Event` objects.
 
-Use:
+Fields:
+
+| Field | Type | Rule |
+|:--|:--|:--|
+| `id` | string | Auto-generated `evt_<id>` unless explicitly supplied. |
+| `timestamp` | string | Auto-generated UTC ISO 8601 timestamp. |
+| `module` | string | Source module ID. |
+| `type` | string | Stable uppercase event type. |
+| `severity` | enum | `INFO`, `WARNING`, or `CRITICAL`. |
+| `data` | object | Small JSON-serializable payload. |
+
+Example:
 
 ```json
 {
-  "module": "example",
-  "type": "EXAMPLE_HEARTBEAT",
+  "id": "evt_a3f8c2d1b4e5",
+  "timestamp": "2026-05-07T08:00:00+00:00",
+  "module": "minimal",
+  "type": "MINIMAL_HEARTBEAT",
   "severity": "INFO",
   "data": {
-    "message": "example module is alive"
+    "message": "minimal module is alive"
   }
 }
 ```
 
-Prefer:
+Event rules:
 
-- stable event type names
-- numeric metrics as numbers, not strings
-- IDs for tracked objects/devices/entities
-- short payloads that can be logged and rendered
+- Use stable event type names.
+- Put numeric values in `data` as numbers, not strings.
+- Include IDs for tracked objects, devices, sessions, or entities when relevant.
+- Do not put raw images, video frames, large blobs, secrets, or credentials in
+  event payloads.
+- Do not block the event publishing path with slow network calls.
 
-Avoid:
+## Metric Schema
 
-- raw images or large binary payloads inside events
-- secrets or credentials in event data
-- blocking network calls inside the event publishing path
-
-## Metrics Guidelines
-
-Push the latest module metrics through `MetricsCollector`:
+Metrics are module-owned dictionaries pushed through `MetricsCollector`:
 
 ```python
-self.metrics_collector.push(
+self.metrics.push(
     self.module_id,
     {
         "fps": 12.5,
@@ -142,21 +169,29 @@ self.metrics_collector.push(
 )
 ```
 
-Metrics should be cheap to compute and safe to read often. The API and
-dashboard may poll them frequently.
+Metric rules:
 
-## Lifecycle Rules
+- Keep metric keys stable once exposed.
+- Use snake_case names.
+- Use numbers, booleans, strings, or small lists/dicts.
+- Make metrics cheap to compute.
+- Do not assume the dashboard is the only consumer; API clients may poll them.
 
-For v0/v1, modules use a sync/threaded lifecycle:
+## Plugin Discovery Test Pattern
 
-- `start()` returns after background work is launched.
-- `stop()` should be idempotent.
-- `health_check()` must be cheap and should not run model inference.
-- long-running work belongs in a background thread.
-- exceptions inside worker threads should be logged and reflected in status.
+At minimum, a new module should prove:
 
-This deliberately avoids mixing async module lifecycles with OpenCV, psutil,
-and other blocking libraries.
+1. `PluginRegistry.discover()` can find it.
+2. `start()` transitions it into `RUNNING`.
+3. `stop()` returns it to `STOPPED`.
+4. It emits at least one event.
+5. It pushes at least one metric.
+
+The repo contains a starter-style discovery test in:
+
+```text
+tests/unit/test_module_starter.py
+```
 
 ## Local Verification
 
@@ -169,16 +204,8 @@ mypy core api modules
 pytest tests -q
 ```
 
-At minimum, add tests for:
-
-- plugin discovery
-- `start()` / `stop()`
-- health check behavior
-- emitted events
-- pushed metrics
-
 ## Safety Boundary
 
 Modules may detect, simulate, and recommend. They must not perform real hardware
 actuation in v0/v1. Real control paths need policy checks, authentication,
-authorization, audit logs, and hardware safety interlocks.
+authorization, audit logs, simulation tests, and hardware safety interlocks.

@@ -58,6 +58,23 @@ def _wait_for_api(base_url: str, timeout_seconds: float = 30.0) -> None:
     raise RuntimeError(f"API did not become healthy at {base_url}: {last_error}")
 
 
+def _wait_for_url(url: str, timeout_seconds: float = 30.0) -> None:
+    """Wait until a URL responds successfully."""
+    deadline = time.time() + timeout_seconds
+    last_error: Exception | None = None
+
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(url, timeout=2.0) as response:
+                if response.status < 500:
+                    return
+        except Exception as exc:  # noqa: BLE001 - report final connection issue.
+            last_error = exc
+        time.sleep(0.5)
+
+    raise RuntimeError(f"URL did not become reachable at {url}: {last_error}")
+
+
 def _start_process(command: list[str], env: dict[str, str]) -> subprocess.Popen:
     creationflags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
     return subprocess.Popen(command, cwd=ROOT, env=env, creationflags=creationflags)
@@ -114,6 +131,28 @@ def _seed_command(base_url: str) -> None:
     print(f"[demo] proposed and approved dry-run command: {command_id}")
 
 
+def _wait_for_demo_surfaces(base_url: str, timeout_seconds: float = 15.0) -> None:
+    """Wait until the dashboard's core API surfaces have useful demo data."""
+    deadline = time.time() + timeout_seconds
+    last_error: Exception | None = None
+
+    while time.time() < deadline:
+        try:
+            modules = _request_json("GET", f"{base_url}/modules")
+            metrics = _request_json("GET", f"{base_url}/metrics")
+            commands = _request_json("GET", f"{base_url}/commands?limit=5")
+            _request_json("GET", f"{base_url}/alerts/latest?limit=5")
+
+            if modules and metrics.get("modules") and commands.get("commands"):
+                print("[demo] dashboard data surfaces ready: modules, metrics, commands, alerts")
+                return
+        except Exception as exc:  # noqa: BLE001 - report final readiness issue.
+            last_error = exc
+        time.sleep(0.5)
+
+    raise RuntimeError(f"Demo data surfaces did not become ready: {last_error}")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the IRMDS sample demo stack.")
     parser.add_argument("--api-host", default="127.0.0.1", help="Host used for local API URL.")
@@ -155,6 +194,7 @@ def main() -> int:
     env.setdefault("IRMDS_FINANCE_REPLAY_SPEED", "1000")
     env.setdefault("IRMDS_INFRA_POLL_INTERVAL", "1.0")
     env.setdefault("IRMDS_API_URL", base_url)
+    env.setdefault("IRMDS_DEMO_MODE", "true")
 
     api_command = [
         sys.executable,
@@ -177,26 +217,30 @@ def main() -> int:
             modules.append("visual")
         _start_modules(base_url, modules)
         _seed_command(base_url)
+        _wait_for_demo_surfaces(base_url)
 
         if not args.no_dashboard:
+            dashboard_url = f"http://127.0.0.1:{args.dashboard_port}"
             dashboard_command = [
                 sys.executable,
                 "-m",
                 "streamlit",
                 "run",
                 "dashboard/app.py",
+                "--global.developmentMode=false",
                 "--server.address",
                 "0.0.0.0",
                 "--server.port",
                 str(args.dashboard_port),
             ]
-            print(f"[demo] starting dashboard: http://127.0.0.1:{args.dashboard_port}")
+            print(f"[demo] starting dashboard: {dashboard_url}")
             processes.append(_start_process(dashboard_command, env))
+            _wait_for_url(dashboard_url)
 
         print("[demo] API docs:      " + f"{base_url}/docs")
         print("[demo] health:        " + f"{base_url}/health")
         if not args.no_dashboard:
-            print("[demo] dashboard:     " + f"http://127.0.0.1:{args.dashboard_port}")
+            print("[demo] dashboard:     " + dashboard_url)
         print("[demo] press Ctrl+C to stop")
 
         if args.smoke:
