@@ -36,11 +36,26 @@ def _print_dependency_error(missing_package: str) -> None:
     print("[demo]   .\\.venv\\Scripts\\python.exe scripts\\demo.py --smoke --no-dashboard", file=sys.stderr)
 
 
+def _print_dependency_import_error(exc: ImportError) -> None:
+    print("[demo] Python dependency import failed", file=sys.stderr)
+    print(f"[demo] interpreter: {sys.executable}", file=sys.stderr)
+    print(f"[demo] python version: {sys.version.split()[0]}", file=sys.stderr)
+    print(f"[demo] error: {exc}", file=sys.stderr)
+    print("[demo] this usually means the dependency wheel was installed for a different Python version", file=sys.stderr)
+    print("[demo] IRMDS targets Python 3.12; recreate the environment with Python 3.12:", file=sys.stderr)
+    print("[demo]   py -3.12 -m venv .venv", file=sys.stderr)
+    print("[demo]   .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt -r requirements-dev.txt", file=sys.stderr)
+    print("[demo]   .\\.venv\\Scripts\\python.exe scripts\\demo.py --smoke --no-dashboard", file=sys.stderr)
+
+
 def _load_sample_data_generator():
     try:
         from scripts.generate_sample_data import main as generate_sample_data
     except ModuleNotFoundError as exc:
         _print_dependency_error(exc.name or "unknown")
+        return None
+    except ImportError as exc:
+        _print_dependency_import_error(exc)
         return None
     return generate_sample_data
 

@@ -49,6 +49,25 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
+### NumPy says `cp312` is incompatible with `cpython-314`
+
+This means Python 3.14 is trying to load packages compiled for Python 3.12.
+Do not mix `.deps` or `.venv` packages across Python versions.
+
+IRMDS currently targets Python 3.12. Recreate the environment with Python 3.12:
+
+```powershell
+if (Test-Path .venv) { Rename-Item .venv ".venv.broken-$(Get-Date -Format yyyyMMddHHmmss)" }
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pip install -e .
+.\.venv\Scripts\python.exe scripts\demo.py --smoke --no-dashboard
+```
+
+If `py -3.12` is not available, install Python 3.12 first. Python 3.14 is too
+new for this project's current dependency baseline.
+
 ### `python -m venv .venv` fails on Windows
 
 Likely causes:
