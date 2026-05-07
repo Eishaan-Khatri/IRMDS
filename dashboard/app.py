@@ -7,38 +7,15 @@ from __future__ import annotations
 import json
 import os
 import time
-from typing import Any
 
-import httpx
 import streamlit as st
 
+from dashboard.components.api_client import get_json, post_json
 from dashboard.components.css_injector import inject_custom_css
 from dashboard.components.ws_client import get_or_create_event_queue, start_websocket_thread
 
 API_URL = os.getenv("IRMDS_API_URL", "http://127.0.0.1:8000").rstrip("/")
 DEMO_MODE = os.getenv("IRMDS_DEMO_MODE", "").lower() in {"1", "true", "yes", "on"}
-
-
-def _get_json(path: str, *, params: dict[str, Any] | None = None) -> tuple[Any, str | None]:
-    """Fetch JSON from the API and return data plus an optional error."""
-    try:
-        response = httpx.get(f"{API_URL}{path}", params=params, timeout=3)
-        if response.status_code != 200:
-            return {}, f"HTTP {response.status_code}: {response.text}"
-        return response.json(), None
-    except Exception as exc:  # noqa: BLE001 - dashboard should show connection issues.
-        return {}, str(exc)
-
-
-def _post_json(path: str, payload: dict[str, Any] | None = None) -> tuple[dict[str, Any], str | None]:
-    """Post JSON to the API and return data plus an optional error."""
-    try:
-        response = httpx.post(f"{API_URL}{path}", json=payload, timeout=5)
-        if response.status_code != 200:
-            return {}, f"HTTP {response.status_code}: {response.text}"
-        return response.json(), None
-    except Exception as exc:  # noqa: BLE001 - dashboard should show connection issues.
-        return {}, str(exc)
 
 
 def _format_uptime(seconds: float) -> str:
@@ -77,7 +54,7 @@ inject_custom_css()
 get_or_create_event_queue()
 start_websocket_thread()
 
-health_data, health_error = _get_json("/health")
+health_data, health_error = get_json(API_URL, "/health")
 api_status = health_error is None
 
 with st.sidebar:
@@ -123,10 +100,10 @@ if not api_status:
         st.caption(health_error)
     st.stop()
 
-modules_data, modules_error = _get_json("/modules")
-metrics_data, metrics_error = _get_json("/metrics")
-commands_data, commands_error = _get_json("/commands", params={"limit": 5})
-alerts_data, alerts_error = _get_json("/alerts/latest", params={"limit": 8})
+modules_data, modules_error = get_json(API_URL, "/modules")
+metrics_data, metrics_error = get_json(API_URL, "/metrics")
+commands_data, commands_error = get_json(API_URL, "/commands", params={"limit": 5})
+alerts_data, alerts_error = get_json(API_URL, "/alerts/latest", params={"limit": 8})
 
 modules = modules_data if isinstance(modules_data, list) else []
 metric_modules = metrics_data.get("modules", []) if metrics_error is None else []
@@ -214,7 +191,7 @@ with ctrl_col1:
                 "payload": {"reason": reason},
                 "dry_run": dry_run,
             }
-            data, error = _post_json("/commands", payload)
+            data, error = post_json(API_URL, "/commands", payload)
             if error:
                 st.error(f"Command proposal failed: {error}")
             elif data.get("status") == "accepted":
@@ -247,7 +224,7 @@ with ctrl_col2:
                     if command.get("state") == "pending" and st.button(
                         "Authorize", key=f"auth_{command['id']}"
                     ):
-                        _post_json(f"/commands/{command['id']}/approve")
+                        post_json(API_URL, f"/commands/{command['id']}/approve")
                         st.rerun()
 
 st.markdown("---")

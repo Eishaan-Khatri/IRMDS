@@ -1,0 +1,25 @@
+name: Docs Improvement
+description: Improve README, guides, examples, or troubleshooting.
+title: "[Docs]: "
+labels: ["docs"]
+body:
+  - type: textarea
+    id: page
+    attributes:
+      label: Document Or Section
+      description: Which page or section needs work?
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problem
+      description: What is confusing, missing, stale, or incorrect?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement
+    validations:
+      required: false
