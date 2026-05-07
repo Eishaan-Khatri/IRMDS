@@ -48,7 +48,7 @@ scope for v0.
 | Infrastructure module | Implemented | psutil collector, log analyzer, threshold events |
 | Command layer | Simulated only | `/commands` proposes and approves dry-run commands; no hardware adapters |
 | Dashboard | Early v0 | Streamlit command center, WebSocket feed, visual page and reusable charts |
-| Tests | Green locally | 90 tests covering core, API, visual, finance, infrastructure, command flow |
+| Tests | Green locally | 91 tests covering core, API, visual, finance, infrastructure, command flow, starter-module discovery |
 | CI | Added after v0.1.0 | GitHub Actions runs compile, ruff, mypy, and pytest |
 | Docker Compose | Added after v0.1.0 | Root Compose stack boots API + dashboard |
 | CLI/demo | Added after v0.1.0 | `irmds demo` / `python scripts/demo.py` starts a sample-safe local demo |
@@ -136,29 +136,56 @@ IRMDS/
 
 ## Quick Start
 
-### Fastest sample demo
+### Quick Local Demo
 
-After installing dependencies, run the sample-safe local demo:
+This is the canonical lowest-friction proof that the runtime works. It starts
+the API, starts sample-friendly modules, seeds one dry-run command, probes the
+system, and exits. On a fresh checkout, complete the environment setup below
+first.
+
+```bash
+python scripts/demo.py --smoke --no-dashboard
+```
+
+Expected output shape:
+
+```text
+[demo] generating deterministic sample data
+[demo] starting API: http://127.0.0.1:8000
+[demo] discovered modules: infrastructure, network, timeseries, visual
+[demo] started module: network
+[demo] started module: timeseries
+[demo] started module: infrastructure
+[demo] proposed and approved dry-run command: cmd_<id>
+[demo] dashboard data surfaces ready: modules, metrics, commands, alerts
+[demo] API docs:      http://127.0.0.1:8000/docs
+[demo] health:        http://127.0.0.1:8000/health
+[demo] press Ctrl+C to stop
+```
+
+What the demo proves:
+
+- plugin discovery finds `visual`, `network`, `timeseries`, and `infrastructure`
+- the FastAPI backend starts and responds
+- modules can be started through the API
+- modules emit metrics/events through the shared runtime
+- dry-run command proposal and approval work
+- the simulated actuation gateway emits command events
+
+### Installed CLI Demo
+
+After installing the package in editable mode, the equivalent installed proof is:
+
+```bash
+python -m pip install -e .
+irmds demo --smoke --no-dashboard
+```
+
+For an attached local demo with the dashboard:
 
 ```bash
 python scripts/demo.py
 ```
-
-Or, after installing the package in editable mode:
-
-```bash
-python -m pip install -e .
-irmds demo
-```
-
-The demo:
-
-- regenerates deterministic sample data
-- starts the FastAPI backend
-- starts the Streamlit dashboard unless `--no-dashboard` is passed
-- starts sample-friendly modules: `network`, `timeseries`, and `infrastructure`
-- leaves `visual` opt-in because it may need a webcam/video file and YOLO weights
-- proposes and approves one dry-run command so the command ledger shows activity
 
 Open:
 
@@ -167,10 +194,16 @@ http://localhost:8000/docs
 http://localhost:8501
 ```
 
-Run a short smoke version that starts, probes, seeds one command, and exits:
+The attached demo regenerates deterministic sample data, starts the API,
+starts the dashboard unless `--no-dashboard` is passed, starts sample-friendly
+modules, and seeds one dry-run command so the command ledger has visible
+activity.
+
+The visual module is opt-in because it may need a webcam/video file and YOLO
+weights:
 
 ```bash
-python scripts/demo.py --smoke --no-dashboard
+python scripts/demo.py --with-visual
 ```
 
 ### 1. Create an environment
@@ -297,6 +330,51 @@ Docker uses `requirements-docker.txt`, which excludes `ultralytics`/PyTorch so
 the demo images stay practical to build. Install `requirements.txt` on the host
 when you need full visual inference.
 
+## Full Visual YOLO Setup
+
+The Docker demo does not install the full YOLO stack. For visual inference,
+use the host environment:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip install -e .
+```
+
+Then configure:
+
+```bash
+IRMDS_VISUAL_SOURCE=0
+IRMDS_VISUAL_MODEL_PATH=models/yolov8n.pt
+```
+
+Notes:
+
+- `IRMDS_VISUAL_SOURCE=0` uses the default webcam.
+- A video file path can be used instead of `0`.
+- RTSP URLs are supported through OpenCV, but should be tested with real camera
+  hardware before being claimed as production-ready.
+- YOLO weights are ignored by git. Put local weights under `models/`.
+
+## Dry-Run Command Safety Boundary
+
+The command layer is deliberately simulation-only in v0.
+
+- `dry_run` defaults to `true`
+- `CommandBus` forces commands back to `dry_run=true` before persistence
+- `ActuationGateway` never talks to hardware
+- approved commands only produce simulated state transitions and events
+- real actuation is deferred until policy checks, authentication, audit logs,
+  simulation tests, and hardware safety interlocks exist
+
+This keeps the project honest: IRMDS v0 proves the runtime and monitoring loop,
+not physical control.
+
+## Verification
+
+Use the dedicated verification guide for exact checks and expected output:
+
+- [docs/verification.md](docs/verification.md)
+
 ## GitHub Actions CI
 
 The repository includes `.github/workflows/ci.yml`.
@@ -382,20 +460,6 @@ Example dry-run command:
 }
 ```
 
-## Safety Boundary
-
-The command layer is deliberately simulation-only in v0.
-
-- `dry_run` defaults to `true`
-- `CommandBus` forces commands back to `dry_run=true` before persistence
-- `ActuationGateway` never talks to hardware
-- approved commands only produce simulated state transitions and events
-- real actuation is deferred until policy checks, authentication, audit logs,
-  simulation tests, and hardware safety interlocks exist
-
-This keeps the project honest: IRMDS v0 proves the runtime and monitoring loop,
-not physical control.
-
 ## Testing Evidence
 
 Current v0 verification:
@@ -403,7 +467,7 @@ Current v0 verification:
 ```text
 ruff check .                 -> passed
 mypy core api modules        -> passed
-pytest tests -q              -> 90 passed
+pytest tests -q              -> 91 passed
 compileall                   -> passed
 git diff --check             -> passed
 ```
