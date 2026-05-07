@@ -293,6 +293,10 @@ The Compose stack is intentionally sample-safe. It starts the API and
 dashboard, mounts `data/` and `logs/`, and does not require a camera, YOLO
 weights, or real hardware.
 
+Docker uses `requirements-docker.txt`, which excludes `ultralytics`/PyTorch so
+the demo images stay practical to build. Install `requirements.txt` on the host
+when you need full visual inference.
+
 ## GitHub Actions CI
 
 The repository includes `.github/workflows/ci.yml`.

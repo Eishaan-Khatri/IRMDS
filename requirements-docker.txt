@@ -1,0 +1,28 @@
+# Sample-safe Docker runtime dependencies.
+#
+# This intentionally excludes ultralytics/PyTorch. The Docker demo boots the
+# API and dashboard and runs non-visual sample modules; real visual inference is
+# opt-in outside the lightweight demo image.
+
+numpy>=1.26.0
+opencv-python-headless>=4.8.0
+scikit-learn>=1.4.0
+pandas>=2.2.0
+joblib>=1.3.0
+
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.6.0
+pydantic-settings>=2.1.0
+websockets>=12.0
+httpx>=0.27.0
+
+sqlalchemy>=2.0.0
+aiosqlite>=0.20.0
+structlog>=24.1.0
+psutil>=5.9.0
+
+streamlit>=1.30.0
+plotly>=5.18.0
+typer[all]>=0.9.0
+rich>=13.7.0
