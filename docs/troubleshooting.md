@@ -21,6 +21,34 @@ If one fails, fix that layer before moving to the next one.
 
 ## Python Environment Issues
 
+### `ModuleNotFoundError: No module named 'numpy'`
+
+This usually means tests or commands were run with one Python environment, but
+`python scripts/demo.py` is using a different interpreter.
+
+From the repository root, use one of these fixes:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python scripts/demo.py --smoke --no-dashboard
+```
+
+Or bypass shell `PATH` ambiguity:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\demo.py --smoke --no-dashboard
+```
+
+If the virtual environment does not exist yet:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt -r requirements-dev.txt
+```
+
 ### `python -m venv .venv` fails on Windows
 
 Likely causes:

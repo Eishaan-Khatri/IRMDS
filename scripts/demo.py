@@ -25,6 +25,26 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
+def _print_dependency_error(missing_package: str) -> None:
+    print(f"[demo] missing Python dependency: {missing_package}", file=sys.stderr)
+    print("[demo] the demo must run with the same interpreter that has IRMDS dependencies installed", file=sys.stderr)
+    print("[demo] fix from the repository root:", file=sys.stderr)
+    print("[demo]   .\\.venv\\Scripts\\Activate.ps1", file=sys.stderr)
+    print("[demo]   python -m pip install -r requirements.txt -r requirements-dev.txt", file=sys.stderr)
+    print("[demo]   python scripts/demo.py --smoke --no-dashboard", file=sys.stderr)
+    print("[demo] or bypass shell PATH issues with:", file=sys.stderr)
+    print("[demo]   .\\.venv\\Scripts\\python.exe scripts\\demo.py --smoke --no-dashboard", file=sys.stderr)
+
+
+def _load_sample_data_generator():
+    try:
+        from scripts.generate_sample_data import main as generate_sample_data
+    except ModuleNotFoundError as exc:
+        _print_dependency_error(exc.name or "unknown")
+        return None
+    return generate_sample_data
+
+
 def _request_json(
     method: str,
     url: str,
@@ -179,7 +199,9 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
-    from scripts.generate_sample_data import main as generate_sample_data
+    generate_sample_data = _load_sample_data_generator()
+    if generate_sample_data is None:
+        return 2
 
     args = parse_args()
     base_url = f"http://{args.api_host}:{args.api_port}"
